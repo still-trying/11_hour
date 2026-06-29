@@ -1,8 +1,6 @@
 import Link from 'next/link'
 import { Sparkles, Gauge, Target, Brain, ArrowRight } from 'lucide-react'
-import dynamic from 'next/dynamic'
-
-const HeroScene = dynamic(() => import('@/components/3d/HeroScene'), { ssr: false })
+import HeroScene from '@/components/3d/HeroSceneWrapper'
 
 const features = [
   {
