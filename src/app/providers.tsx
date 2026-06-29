@@ -9,12 +9,17 @@ import type { User, AuthChangeEvent, Session } from '@supabase/supabase-js'
 const supabase = createClient()
 
 async function fetchProfile(userId: string) {
-  const { data } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', userId)
-    .single()
-  return data
+  try {
+    const { data } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single()
+    return data
+  } catch {
+    // Profile fetch failed — table might not exist or RLS blocked it
+    return null
+  }
 }
 
 export function Providers({ children }: { children: React.ReactNode }) {
