@@ -84,6 +84,12 @@ CREATE TABLE public.notifications (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ENABLE REALTIME (required for socket/WebSocket subscriptions)
+ALTER PUBLICATION supabase_realtime ADD TABLE public.tasks;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.habits;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.habit_logs;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.notifications;
+
 -- INDEXES
 CREATE INDEX idx_tasks_user_id ON public.tasks(user_id);
 CREATE INDEX idx_tasks_deadline ON public.tasks(deadline);

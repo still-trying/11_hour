@@ -135,18 +135,30 @@ export function useHabits() {
     [fetchHabits],
   )
 
-  // Set up realtime subscription
+  // Set up realtime subscriptions
   useEffect(() => {
+    const user = useAppStore.getState().user
+    if (!user?.id) return
+
     const channel = supabase
       .channel('habits_changes')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'habits' },
+        {
+          event: '*',
+          schema: 'public',
+          table: 'habits',
+          filter: `user_id=eq.${user.id}`,
+        },
         () => {
           fetchHabits()
         },
       )
-      .subscribe()
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('Habits realtime connected')
+        }
+      })
 
     return () => {
       supabase.removeChannel(channel)

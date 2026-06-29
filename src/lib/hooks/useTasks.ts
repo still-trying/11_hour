@@ -184,18 +184,29 @@ export function useTasks() {
   // Set up realtime subscription filtered to the current user's tasks
   useEffect(() => {
     const user = useAppStore.getState().user
-    if (!user) return // Don't subscribe if no user yet
+    if (!user?.id) return // Don't subscribe if no user yet
 
     const channel = supabase
       .channel('tasks_changes')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'tasks', filter: `user_id=eq.${user.id}` } as any,
+        {
+          event: '*',
+          schema: 'public',
+          table: 'tasks',
+          filter: `user_id=eq.${user.id}`,
+        },
         () => {
           fetchTasks()
         },
       )
-      .subscribe()
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('Tasks realtime connected')
+        } else if (status === 'CHANNEL_ERROR') {
+          console.warn('Tasks realtime channel error, will retry...')
+        }
+      })
 
     return () => {
       supabase.removeChannel(channel)

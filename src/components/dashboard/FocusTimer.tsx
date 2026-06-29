@@ -1,8 +1,11 @@
 'use client'
 
 import { useState, useRef, useCallback, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils/cn'
 import { Play, Pause, RotateCcw, Clock } from 'lucide-react'
+
+const supabase = createClient()
 
 type TimerMode = 'pomodoro' | 'deep_work'
 
@@ -24,6 +27,24 @@ export function FocusTimer() {
   const [isRunning, setIsRunning] = useState(false)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
+  const startTimeRef = useRef<number | null>(null)
+
+  // Save completed session to Supabase
+  const saveSession = useCallback(async (completedMode: TimerMode, completedPhase: 'work' | 'break', elapsedSeconds: number) => {
+    if (completedPhase !== 'work') return // Only save work sessions
+    try {
+      await supabase.from('focus_sessions').insert({
+        session_type: completedMode,
+        duration_minutes: Math.round(elapsedSeconds / 60),
+        target_duration: TIMERS[completedMode].work / 60,
+        started_at: new Date(Date.now() - elapsedSeconds * 1000).toISOString(),
+        ended_at: new Date().toISOString(),
+      })
+    } catch (err) {
+      console.error('Failed to save focus session:', err)
+    }
+  }, [])
+
   const clearTimer = useCallback(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current)
@@ -33,10 +54,10 @@ export function FocusTimer() {
 
   const startTimer = useCallback(() => {
     clearTimer()
+    startTimeRef.current = Date.now() - (TIMERS[mode].work - timeLeft) * 1000
     intervalRef.current = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
-          // Switch phase
           clearTimer()
           setIsRunning(false)
           return 0
@@ -45,7 +66,7 @@ export function FocusTimer() {
       })
     }, 1000)
     setIsRunning(true)
-  }, [clearTimer])
+  }, [clearTimer, mode, timeLeft])
 
   const pauseTimer = useCallback(() => {
     clearTimer()
@@ -57,6 +78,7 @@ export function FocusTimer() {
     setIsRunning(false)
     setPhase('work')
     setTimeLeft(TIMERS[mode].work)
+    startTimeRef.current = null
   }, [clearTimer, mode])
 
   const switchMode = useCallback(
@@ -69,6 +91,13 @@ export function FocusTimer() {
     },
     [clearTimer],
   )
+
+  // Save session when timer completes
+  useEffect(() => {
+    if (!isRunning && timeLeft === 0 && phase === 'work') {
+      saveSession(mode, phase, TIMERS[mode].work)
+    }
+  }, [isRunning, timeLeft, phase, mode, saveSession])
 
   // Cleanup on unmount
   useEffect(() => {

@@ -1,15 +1,17 @@
 'use client'
 
-import { memo } from 'react'
+import { memo, useCallback } from 'react'
 import type { Task } from '@/types'
-import { getUrgencyInfo, getDefconColor } from '@/lib/utils/urgency'
+import { getUrgencyInfo } from '@/lib/utils/urgency'
 import { cn } from '@/lib/utils/cn'
-import { CheckCircle2, Clock, Trash2, ChevronDown, ChevronUp } from 'lucide-react'
+import { fireConfetti } from '@/lib/utils/confetti'
+import { CheckCircle2, Clock, Trash2, ChevronDown, ChevronUp, Edit3 } from 'lucide-react'
 
 interface TaskCardProps {
   task: Task
   onComplete: (id: string) => void
   onDelete: (id: string) => void
+  onEdit?: (task: Task) => void
   expanded?: boolean
   onToggleExpand?: (id: string) => void
 }
@@ -18,6 +20,7 @@ export const TaskCard = memo(function TaskCard({
   task,
   onComplete,
   onDelete,
+  onEdit,
   expanded,
   onToggleExpand,
 }: TaskCardProps) {
@@ -30,6 +33,13 @@ export const TaskCard = memo(function TaskCard({
   )
 
   const steps = task.ai_generated_steps || []
+
+  const handleComplete = useCallback(() => {
+    if (task.status !== 'completed') {
+      fireConfetti({ particleCount: 30, spread: 45 })
+    }
+    onComplete(task.id)
+  }, [task.id, task.status, onComplete])
 
   return (
     <div
@@ -47,7 +57,7 @@ export const TaskCard = memo(function TaskCard({
       <div className="flex items-start gap-3">
         {/* Status indicator */}
         <button
-          onClick={() => onComplete(task.id)}
+          onClick={handleComplete}
           className={cn(
             'mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 shrink-0',
             task.status === 'completed'
@@ -133,6 +143,15 @@ export const TaskCard = memo(function TaskCard({
 
         {/* Actions */}
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          {onEdit && task.status !== 'completed' && (
+            <button
+              onClick={() => onEdit(task)}
+              className="p-1.5 rounded-lg text-[#475569] hover:text-brand hover:bg-brand/10 transition-all"
+              title="Edit task"
+            >
+              <Edit3 className="w-3.5 h-3.5" />
+            </button>
+          )}
           <button
             onClick={() => onDelete(task.id)}
             className="p-1.5 rounded-lg text-[#475569] hover:text-defcon-meltdown hover:bg-defcon-meltdown/10 transition-all"

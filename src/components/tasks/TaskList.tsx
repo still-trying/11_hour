@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import type { Task } from '@/types'
 import { TaskCard } from './TaskCard'
+import { TaskEditModal } from './TaskEditModal'
 import { useTasks } from '@/lib/hooks/useTasks'
-import { getUrgencyInfo } from '@/lib/utils/urgency'
 import { cn } from '@/lib/utils/cn'
 import { Filter, ArrowUpDown } from 'lucide-react'
 
@@ -16,6 +16,7 @@ export function TaskList({ tasks: propTasks }: { tasks: Task[] }) {
   const [sortBy, setSortBy] = useState<SortOption>('urgency')
   const [filterBy, setFilterBy] = useState<FilterOption>('all')
   const [expandedTask, setExpandedTask] = useState<string | null>(null)
+  const [editingTask, setEditingTask] = useState<Task | null>(null)
 
   // Sort tasks
   const sorted = [...propTasks].sort((a, b) => {
@@ -111,6 +112,7 @@ export function TaskList({ tasks: propTasks }: { tasks: Task[] }) {
               task={task}
               onComplete={completeTask}
               onDelete={deleteTask}
+              onEdit={setEditingTask}
               expanded={expandedTask === task.id}
               onToggleExpand={(id) =>
                 setExpandedTask(expandedTask === id ? null : id)
@@ -118,6 +120,11 @@ export function TaskList({ tasks: propTasks }: { tasks: Task[] }) {
             />
           ))}
         </div>
+      )}
+
+      {/* Edit Modal */}
+      {editingTask && (
+        <TaskEditModal task={editingTask} onClose={() => setEditingTask(null)} />
       )}
     </div>
   )
