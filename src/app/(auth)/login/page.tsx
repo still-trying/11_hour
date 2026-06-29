@@ -1,0 +1,101 @@
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { createClient } from '@/lib/supabase/client'
+import { toast } from 'sonner'
+
+const supabase = createClient()
+
+export default function LoginPage() {
+  const router = useRouter()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+
+      if (error) throw error
+
+      router.push('/dashboard')
+      router.refresh()
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to log in')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-void flex items-center justify-center p-4">
+      <div className="w-full max-w-sm">
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold gradient-text">11_HOUR</h1>
+          <p className="text-sm text-[#94A3B8] mt-2">
+            When you&apos;re out of time, we find more.
+          </p>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleLogin} className="glass-card p-6 space-y-4">
+          <h2 className="text-lg font-semibold text-[#F8FAFC]">Welcome back</h2>
+
+          <div className="space-y-2">
+            <label className="text-sm text-[#94A3B8]" htmlFor="email">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              required
+              className="w-full px-3 py-2 bg-[#131320] border border-[rgba(255,255,255,0.06)] rounded-lg text-[#F8FAFC] text-sm placeholder:text-[#475569] focus:outline-none focus:border-brand/50 focus:ring-1 focus:ring-brand/20 transition-colors"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm text-[#94A3B8]" htmlFor="password">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+              className="w-full px-3 py-2 bg-[#131320] border border-[rgba(255,255,255,0.06)] rounded-lg text-[#F8FAFC] text-sm placeholder:text-[#475569] focus:outline-none focus:border-brand/50 focus:ring-1 focus:ring-brand/20 transition-colors"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-2 bg-brand hover:bg-brand-dark text-white rounded-lg font-medium text-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed glow-brand-sm"
+          >
+            {loading ? 'Signing in...' : 'Sign in'}
+          </button>
+
+          <p className="text-center text-sm text-[#475569]">
+            Don&apos;t have an account?{' '}
+            <Link href="/signup" className="text-brand hover:text-brand-light transition-colors">
+              Sign up
+            </Link>
+          </p>
+        </form>
+      </div>
+    </div>
+  )
+}
