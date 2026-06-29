@@ -31,9 +31,10 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith('/signup')
   const isLandingPage = request.nextUrl.pathname === '/'
   const isApiRoute = request.nextUrl.pathname.startsWith('/api')
+  const isAuthCallback = request.nextUrl.pathname.startsWith('/auth/callback')
 
-  // Allow API routes and landing page
-  if (isApiRoute || isLandingPage) {
+  // Allow API routes, landing page, and OAuth callbacks
+  if (isApiRoute || isLandingPage || isAuthCallback) {
     return supabaseResponse
   }
 
