@@ -144,28 +144,35 @@ export function useHabits() {
     const user = useAppStore.getState().user
     if (!user?.id) return
 
-    const channel = supabase
-      .channel('habits_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'habits',
-          filter: `user_id=eq.${user.id}`,
-        },
-        () => {
-          fetchHabits()
-        },
-      )
-      .subscribe((status: string) => {
-        if (status === 'SUBSCRIBED') {
-          console.log('Habits realtime connected')
-        }
-      })
+    const channelName = `habits_changes_${Date.now()}`
+    let channel: ReturnType<typeof supabase.channel> | null = null
+
+    try {
+      channel = supabase
+        .channel(channelName)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'habits',
+            filter: `user_id=eq.${user.id}`,
+          },
+          () => {
+            fetchHabits()
+          },
+        )
+        .subscribe((status: string) => {
+          if (status === 'SUBSCRIBED') {
+            console.log('Habits realtime connected')
+          }
+        })
+    } catch (err) {
+      console.warn('Failed to setup habits realtime:', err)
+    }
 
     return () => {
-      supabase.removeChannel(channel)
+      if (channel) supabase.removeChannel(channel)
     }
   }, [fetchHabits])
 

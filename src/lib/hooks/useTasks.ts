@@ -203,30 +203,39 @@ export function useTasks() {
     const user = useAppStore.getState().user
     if (!user?.id) return // Don't subscribe if no user yet
 
-    const channel = supabase
-      .channel('tasks_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'tasks',
-          filter: `user_id=eq.${user.id}`,
-        },
-        () => {
-          fetchTasks()
-        },
-      )
-      .subscribe((status: string) => {
-        if (status === 'SUBSCRIBED') {
-          console.log('Tasks realtime connected')
-        } else if (status === 'CHANNEL_ERROR') {
-          console.warn('Tasks realtime channel error, will retry...')
-        }
-      })
+    // Use a unique channel name per subscription to avoid
+    // "cannot add callbacks after subscribe()" errors on re-renders
+    const channelName = `tasks_changes_${Date.now()}`
+    let channel: ReturnType<typeof supabase.channel> | null = null
+
+    try {
+      channel = supabase
+        .channel(channelName)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'tasks',
+            filter: `user_id=eq.${user.id}`,
+          },
+          () => {
+            fetchTasks()
+          },
+        )
+        .subscribe((status: string) => {
+          if (status === 'SUBSCRIBED') {
+            console.log('Tasks realtime connected')
+          } else if (status === 'CHANNEL_ERROR') {
+            console.warn('Tasks realtime channel error, will retry...')
+          }
+        })
+    } catch (err) {
+      console.warn('Failed to setup tasks realtime:', err)
+    }
 
     return () => {
-      supabase.removeChannel(channel)
+      if (channel) supabase.removeChannel(channel)
     }
   }, [fetchTasks])
 
