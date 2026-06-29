@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useCallback } from 'react'
+import { useEffect } from 'react'
 import { useAppStore } from '@/lib/store/useAppStore'
 import { UrgencyMeter } from '@/components/dashboard/UrgencyMeter'
 import { QuickCapture } from '@/components/tasks/QuickCapture'
@@ -10,14 +10,11 @@ import { FocusTimer } from '@/components/dashboard/FocusTimer'
 import { NotificationBell } from '@/components/layout/NotificationBell'
 import { useTasks } from '@/lib/hooks/useTasks'
 import { useHabits } from '@/lib/hooks/useHabits'
-import { calculateUrgencyScore } from '@/lib/utils/urgency'
-import { createClient } from '@/lib/supabase/client'
-
-const supabase = createClient()
+import { calculateUrgencyScore, getDefconFromScore } from '@/lib/utils/urgency'
 
 export default function DashboardPage() {
   const { tasks } = useAppStore()
-  const { fetchTasks } = useTasks()
+  const { fetchTasks, updateTask } = useTasks()
   const { habits, toggleHabit, isCompletedToday } = useHabits()
 
   const activeTasks = tasks.filter(
@@ -27,8 +24,8 @@ export default function DashboardPage() {
   // 60-second urgency recalculation tick
   useEffect(() => {
     const recalculateUrgency = async () => {
-      const now = Date.now()
-      const urgentTasks = tasks.filter(
+      const currentTasks = useAppStore.getState().tasks
+      const urgentTasks = currentTasks.filter(
         (t) =>
           t.status !== 'completed' &&
           t.status !== 'cancelled' &&
@@ -44,10 +41,11 @@ export default function DashboardPage() {
         )
 
         if (Math.abs(newScore - task.urgency_score) > 1) {
-          await supabase
-            .from('tasks')
-            .update({ urgency_score: newScore })
-            .eq('id', task.id)
+          const newDefcon = getDefconFromScore(newScore)
+          await updateTask(task.id, {
+            urgency_score: newScore,
+            defcon_level: newDefcon,
+          })
         }
       }
     }
@@ -56,7 +54,7 @@ export default function DashboardPage() {
     recalculateUrgency()
     const interval = setInterval(recalculateUrgency, 60_000)
     return () => clearInterval(interval)
-  }, [tasks])
+  }, [updateTask])
 
   return (
     <div className="space-y-6">

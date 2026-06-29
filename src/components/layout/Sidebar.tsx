@@ -7,6 +7,7 @@ import {
   ListChecks,
   BarChart3,
   RotateCcw,
+  CalendarDays,
   Clock,
 } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
@@ -15,6 +16,7 @@ import { useAppStore } from '@/lib/store/useAppStore'
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/tasks', label: 'Tasks', icon: ListChecks },
+  { href: '/calendar', label: 'Calendar', icon: CalendarDays },
   { href: '/habits', label: 'Habits', icon: RotateCcw },
   { href: '/analytics', label: 'Analytics', icon: BarChart3 },
 ]

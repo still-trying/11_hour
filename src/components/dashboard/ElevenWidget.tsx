@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useAppStore } from '@/lib/store/useAppStore'
-import { elevenChat } from '@/lib/ai/groq'
 import { Sparkles, Send, X, MessageSquare } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import type { AiMessage } from '@/types'
@@ -44,7 +43,17 @@ export function ElevenWidget() {
           deadline: t.deadline,
         }))
 
-      const response = await elevenChat(userMessage, taskContext)
+      const res = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userMessage, taskContext }),
+      })
+
+      if (!res.ok) {
+        throw new Error(`API error: ${res.status}`)
+      }
+
+      const response = await res.json()
 
       setMessages((prev) => [
         ...prev,

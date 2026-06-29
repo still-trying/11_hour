@@ -34,3 +34,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# project analysis / review docs
+BUILD_DOCUMENT.md
+MASTER_REVIEW.md

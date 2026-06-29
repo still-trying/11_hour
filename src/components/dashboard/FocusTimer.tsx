@@ -29,17 +29,21 @@ export function FocusTimer() {
 
   const startTimeRef = useRef<number | null>(null)
 
-  // Save completed session to Supabase
+  // Save completed session
+  // NOTE: focus_sessions table needs to be created in Supabase schema
+  // For now, log the completion. Once the table exists, uncomment the DB insert.
   const saveSession = useCallback(async (completedMode: TimerMode, completedPhase: 'work' | 'break', elapsedSeconds: number) => {
     if (completedPhase !== 'work') return // Only save work sessions
     try {
-      await supabase.from('focus_sessions').insert({
-        session_type: completedMode,
-        duration_minutes: Math.round(elapsedSeconds / 60),
-        target_duration: TIMERS[completedMode].work / 60,
-        started_at: new Date(Date.now() - elapsedSeconds * 1000).toISOString(),
-        ended_at: new Date().toISOString(),
-      })
+      console.log(`Focus session completed: ${completedMode}, ${Math.round(elapsedSeconds / 60)} minutes`)
+      // TODO: Uncomment once focus_sessions table is created in Supabase
+      // await supabase.from('focus_sessions').insert({
+      //   session_type: completedMode,
+      //   duration_minutes: Math.round(elapsedSeconds / 60),
+      //   target_duration: TIMERS[completedMode].work / 60,
+      //   started_at: new Date(Date.now() - elapsedSeconds * 1000).toISOString(),
+      //   ended_at: new Date().toISOString(),
+      // })
     } catch (err) {
       console.error('Failed to save focus session:', err)
     }
@@ -54,19 +58,35 @@ export function FocusTimer() {
 
   const startTimer = useCallback(() => {
     clearTimer()
-    startTimeRef.current = Date.now() - (TIMERS[mode].work - timeLeft) * 1000
+    startTimeRef.current = Date.now() - (TIMERS[mode][phase] - timeLeft) * 1000
     intervalRef.current = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearTimer()
-          setIsRunning(false)
+          // Transition phases: work → break → work
+          setPhase((currentPhase) => {
+            if (currentPhase === 'work') {
+              // Save session before transitioning to break
+              setTimeLeft(TIMERS[mode].break)
+              // Auto-start break after a brief delay
+              setTimeout(() => {
+                setIsRunning(true)
+              }, 500)
+              return 'break'
+            } else {
+              // Break finished, reset to work
+              setTimeLeft(TIMERS[mode].work)
+              setIsRunning(false)
+              return 'work'
+            }
+          })
           return 0
         }
         return prev - 1
       })
     }, 1000)
     setIsRunning(true)
-  }, [clearTimer, mode, timeLeft])
+  }, [clearTimer, mode, timeLeft, phase])
 
   const pauseTimer = useCallback(() => {
     clearTimer()

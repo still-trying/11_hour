@@ -47,14 +47,39 @@ export function QuickCapture() {
         if (parts.length > 1) {
           // Try to parse deadline
           const rest = parts[1].trim()
-          const dateMatch = rest.match(/(\d{1,2}[:\.]\d{2}\s*[ap]m)|(tomorrow)|(next\s+\w+)|(\d{1,2}\/\d{1,2})/i)
+          const dateMatch = rest.match(/(\d{1,2}[:\.]\d{2}\s*[ap]m)|(\d{1,2}\s*[ap]m)|(tomorrow)|(next\s+week)|(\d{1,2}\/\d{1,2})/i)
           if (dateMatch) {
-            // Simple deadline parsing
             if (rest.toLowerCase().includes('tomorrow')) {
               const tomorrow = new Date()
               tomorrow.setDate(tomorrow.getDate() + 1)
               tomorrow.setHours(17, 0, 0, 0)
               deadline = tomorrow.toISOString()
+            } else if (rest.toLowerCase().includes('next week')) {
+              const nextWeek = new Date()
+              nextWeek.setDate(nextWeek.getDate() + 7)
+              nextWeek.setHours(17, 0, 0, 0)
+              deadline = nextWeek.toISOString()
+            } else if (dateMatch[1] || dateMatch[2]) {
+              // Time pattern like "5pm" or "3:30pm"
+              const timeStr = (dateMatch[1] || dateMatch[2]).trim()
+              const isPM = /pm/i.test(timeStr)
+              const timeParts = timeStr.replace(/[ap]m/i, '').split(/[:\.]/)
+              let hours = parseInt(timeParts[0])
+              const mins = timeParts[1] ? parseInt(timeParts[1]) : 0
+              if (isPM && hours < 12) hours += 12
+              if (!isPM && hours === 12) hours = 0
+              const today = new Date()
+              today.setHours(hours, mins, 0, 0)
+              if (today.getTime() < Date.now()) today.setDate(today.getDate() + 1)
+              deadline = today.toISOString()
+            } else if (dateMatch[5]) {
+              // Date pattern like "7/15"
+              const [month, day] = dateMatch[5].split('/').map(Number)
+              const date = new Date()
+              date.setMonth(month - 1, day)
+              date.setHours(17, 0, 0, 0)
+              if (date.getTime() < Date.now()) date.setFullYear(date.getFullYear() + 1)
+              deadline = date.toISOString()
             }
           }
 

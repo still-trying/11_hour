@@ -2,6 +2,8 @@
 // 11_HOUR - Type Definitions
 // ============================================================
 
+import type { User } from '@supabase/supabase-js'
+
 // --- Urgency / DEFCON ---
 export type DefconLevel = 'calm' | 'focused' | 'urgent' | 'critical' | 'meltdown'
 export type TaskStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled' | 'overdue'
@@ -138,7 +140,7 @@ export interface AiPrioritizeResponse {
 // --- Store Types ---
 export interface AppState {
   // Auth
-  user: any | null
+  user: User | null
   profile: Profile | null
   isLoading: boolean
 
@@ -156,7 +158,7 @@ export interface AppState {
   focusMode: boolean
 
   // Actions
-  setUser: (user: any | null) => void
+  setUser: (user: User | null) => void
   setProfile: (profile: Profile | null) => void
   setLoading: (loading: boolean) => void
   setTasks: (tasks: Task[]) => void

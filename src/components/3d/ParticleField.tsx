@@ -20,11 +20,13 @@ export default function ParticleField() {
   }, [])
 
   const velocities = useRef(new Float32Array(COUNT * 3))
+  const velocitiesInitialized = useRef(false)
   // Initialize velocities once
-  if (velocities.current.every(v => v === 0)) {
+  if (!velocitiesInitialized.current) {
     for (let i = 0; i < COUNT * 3; i++) {
       velocities.current[i] = (Math.random() - 0.5) * 0.002
     }
+    velocitiesInitialized.current = true
   }
 
   useFrame(() => {

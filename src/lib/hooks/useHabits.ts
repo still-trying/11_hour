@@ -73,9 +73,11 @@ export function useHabits() {
           if (error) throw error
         } else {
           // Add completion
+          const user = useAppStore.getState().user
           const { error } = await supabase.from('habit_logs').insert({
             habit_id: habitId,
             completed_date: today,
+            user_id: user?.id,
           })
 
           if (error) throw error
@@ -100,7 +102,9 @@ export function useHabits() {
       frequency?: 'daily' | 'weekdays' | 'weekends' | 'custom'
     }) => {
       try {
+        const user = useAppStore.getState().user
         const { error } = await supabase.from('habits').insert({
+          user_id: user?.id,
           title: habitData.title,
           description: habitData.description || null,
           icon: habitData.icon || 'zap',
@@ -154,7 +158,7 @@ export function useHabits() {
           fetchHabits()
         },
       )
-      .subscribe((status) => {
+      .subscribe((status: string) => {
         if (status === 'SUBSCRIBED') {
           console.log('Habits realtime connected')
         }

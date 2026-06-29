@@ -43,7 +43,7 @@ const STYLES: Record<DefconLevel, Omit<UrgencyInfo, 'score' | 'defconLevel' | 'h
   },
 }
 
-function getDefconFromScore(score: number): DefconLevel {
+export function getDefconFromScore(score: number): DefconLevel {
   if (score <= 20) return 'calm'
   if (score <= 40) return 'focused'
   if (score <= 60) return 'urgent'
@@ -57,7 +57,7 @@ export function calculateUrgencyScore(
   estimatedMinutes: number,
   timesSnoozed: number = 0,
 ): number {
-  if (!deadline) return 25
+  if (!deadline) return 30
 
   const msRemaining = new Date(deadline).getTime() - Date.now()
   if (msRemaining <= 0) return 100
@@ -81,10 +81,10 @@ export function calculateUrgencyScore(
   })()
 
   const importanceFactor = (importance || 3) / 5
-  const effortFactor = Math.min((estimatedMinutes || 30) / 480, 1) * 0.1
-  const snoozePenalty = Math.min(timesSnoozed * 0.07, 0.25)
+  const effortFactor = Math.min((estimatedMinutes || 30) / 480, 1)
+  const snoozePenalty = Math.min(timesSnoozed * 0.07, 0.20)
 
-  const raw = (deadlineFactor * 0.58 + importanceFactor * 0.32 + effortFactor + snoozePenalty) * 100
+  const raw = (deadlineFactor * 0.60 + importanceFactor * 0.30 + effortFactor * 0.05 + snoozePenalty) * 100
   return Math.min(Math.round(raw * 10) / 10, 100)
 }
 

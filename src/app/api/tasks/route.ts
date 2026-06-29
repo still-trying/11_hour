@@ -107,9 +107,28 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
+    // Whitelist allowed fields to prevent arbitrary column overwrites
+    const ALLOWED_FIELDS = [
+      'title', 'description', 'deadline', 'importance', 'estimated_minutes',
+      'category', 'urgency_score', 'defcon_level', 'status', 'completed_at',
+      'started_at', 'actual_minutes', 'times_snoozed', 'ai_generated_steps',
+      'tags', 'natural_input',
+    ] as const
+
+    const sanitized: Record<string, unknown> = {}
+    for (const key of ALLOWED_FIELDS) {
+      if (key in body) {
+        sanitized[key] = body[key]
+      }
+    }
+
+    if (Object.keys(sanitized).length === 0) {
+      return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 })
+    }
+
     const { data, error } = await supabase
       .from('tasks')
-      .update(body)
+      .update(sanitized)
       .eq('id', id)
       .select()
       .single()

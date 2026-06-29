@@ -11,6 +11,15 @@ interface HabitRingProps {
   onClick?: () => void
 }
 
+// Convert hex color to RGB components for use in drop-shadow
+function hexToRgb(hex: string): string {
+  const cleaned = hex.replace('#', '')
+  const r = parseInt(cleaned.substring(0, 2), 16)
+  const g = parseInt(cleaned.substring(2, 4), 16)
+  const b = parseInt(cleaned.substring(4, 6), 16)
+  return `${r},${g},${b}`
+}
+
 export const HabitRing = memo(function HabitRing({
   habit,
   completed,
@@ -21,6 +30,7 @@ export const HabitRing = memo(function HabitRing({
   const circumference = 2 * Math.PI * radius
   const fillLength = circumference * progress
   const color = habit.color || '#6C63FF'
+  const rgbColor = hexToRgb(color)
 
   return (
     <button
@@ -57,12 +67,12 @@ export const HabitRing = memo(function HabitRing({
             strokeDasharray={`${fillLength} ${circumference - fillLength}`}
             className={cn(
               'transition-all duration-700 ease-out',
-              completed && 'drop-shadow-[0_0_8px_rgba(var(--ring-color),0.5)]',
             )}
-            style={{
-              // @ts-ignore
-              '--ring-color': color,
-            }}
+            style={
+              completed
+                ? { filter: `drop-shadow(0 0 8px rgba(${rgbColor},0.5))` }
+                : undefined
+            }
           />
         </svg>
 

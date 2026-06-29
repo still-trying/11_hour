@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useAppStore } from '@/lib/store/useAppStore'
 import { Toaster } from 'sonner'
+import type { User, AuthChangeEvent, Session } from '@supabase/supabase-js'
 
 const supabase = createClient()
 
@@ -21,7 +22,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const [initialized, setInitialized] = useState(false)
 
   const handleAuthState = useCallback(
-    async (sessionUser: any) => {
+    async (sessionUser: User | null) => {
       if (sessionUser) {
         setUser(sessionUser)
         const profile = await fetchProfile(sessionUser.id)
@@ -51,7 +52,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      async (_event: AuthChangeEvent, session: Session | null) => {
         await handleAuthState(session?.user ?? null)
       },
     )

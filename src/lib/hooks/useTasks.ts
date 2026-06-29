@@ -8,8 +8,7 @@
 import { useCallback, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useAppStore } from '@/lib/store/useAppStore'
-import { calculateUrgencyScore } from '@/lib/utils/urgency'
-import { parseNaturalTask, generateTaskSteps } from '@/lib/ai/groq'
+import { calculateUrgencyScore, getDefconFromScore } from '@/lib/utils/urgency'
 import type { Task } from '@/types'
 
 const supabase = createClient()
@@ -58,17 +57,24 @@ export function useTasks() {
       try {
         let taskData = { ...input }
 
-        // AI parse natural language
+        // AI parse natural language via server-side API
         if (input.useAi && input.natural_input) {
-          const parsed = await parseNaturalTask(input.natural_input)
-          taskData = {
-            ...taskData,
-            title: parsed.title,
-            description: parsed.description || input.description,
-            deadline: parsed.deadline || input.deadline,
-            importance: parsed.importance,
-            estimated_minutes: parsed.estimated_minutes,
-            category: parsed.category,
+          try {
+            const parsed = await apiFetch('/api/ai/prioritize', {
+              method: 'POST',
+              body: JSON.stringify({ text: input.natural_input }),
+            })
+            taskData = {
+              ...taskData,
+              title: parsed.title,
+              description: parsed.description || input.description,
+              deadline: parsed.deadline || input.deadline,
+              importance: parsed.importance,
+              estimated_minutes: parsed.estimated_minutes,
+              category: parsed.category,
+            }
+          } catch {
+            // AI parsing is optional — proceed with raw input
           }
         }
 
@@ -78,14 +84,19 @@ export function useTasks() {
           taskData.estimated_minutes || 30,
         )
 
-        // Try to generate AI steps (graceful failure)
+        const defconLevel = getDefconFromScore(urgencyScore)
+
+        // Try to generate AI steps via server-side API (graceful failure)
         let steps: { title: string; estimated_minutes: number }[] = []
         try {
-          const generatedSteps = await generateTaskSteps(
-            taskData.title,
-            taskData.description,
-          )
-          steps = generatedSteps
+          const stepsResponse = await apiFetch('/api/ai/steps', {
+            method: 'POST',
+            body: JSON.stringify({
+              title: taskData.title,
+              description: taskData.description,
+            }),
+          })
+          steps = stepsResponse.steps || []
         } catch {
           // AI step generation is optional — proceed without
         }
@@ -100,6 +111,7 @@ export function useTasks() {
             estimated_minutes: taskData.estimated_minutes || 30,
             category: taskData.category || 'general',
             urgency_score: urgencyScore,
+            defcon_level: defconLevel,
             natural_input: input.natural_input || null,
             ai_generated_steps: steps,
           }),
@@ -121,14 +133,17 @@ export function useTasks() {
       try {
         // Recalculate urgency if deadline/importance/estimated_minutes changed
         if (updates.deadline || updates.importance || updates.estimated_minutes) {
-          const task = tasks.find((t) => t.id === id)
+          const currentTasks = useAppStore.getState().tasks
+          const task = currentTasks.find((t) => t.id === id)
           if (task) {
-            updates.urgency_score = calculateUrgencyScore(
+            const newScore = calculateUrgencyScore(
               updates.deadline ?? task.deadline ?? null,
               updates.importance ?? task.importance,
               updates.estimated_minutes ?? task.estimated_minutes,
               updates.times_snoozed ?? task.times_snoozed,
             )
+            updates.urgency_score = newScore
+            updates.defcon_level = getDefconFromScore(newScore)
           }
         }
 
@@ -142,7 +157,7 @@ export function useTasks() {
         console.error('Error updating task:', err)
       }
     },
-    [fetchTasks, tasks],
+    [fetchTasks],
   )
 
   // Complete a task
@@ -152,6 +167,7 @@ export function useTasks() {
         status: 'completed',
         completed_at: new Date().toISOString(),
         urgency_score: 0,
+        defcon_level: 'calm',
       })
     },
     [updateTask],
@@ -173,12 +189,13 @@ export function useTasks() {
   // Snooze a task (increment times_snoozed) via API
   const snoozeTask = useCallback(
     async (id: string) => {
-      const task = tasks.find((t) => t.id === id)
+      const currentTasks = useAppStore.getState().tasks
+      const task = currentTasks.find((t) => t.id === id)
       if (task) {
         await updateTask(id, { times_snoozed: (task.times_snoozed || 0) + 1 })
       }
     },
-    [updateTask, tasks],
+    [updateTask],
   )
 
   // Set up realtime subscription filtered to the current user's tasks
@@ -200,7 +217,7 @@ export function useTasks() {
           fetchTasks()
         },
       )
-      .subscribe((status) => {
+      .subscribe((status: string) => {
         if (status === 'SUBSCRIBED') {
           console.log('Tasks realtime connected')
         } else if (status === 'CHANNEL_ERROR') {
