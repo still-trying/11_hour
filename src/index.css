@@ -1,0 +1,286 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+:root {
+  /* ==========================================
+     COLOR TOKENS & SEMANTIC TOKENS
+     ========================================== */
+  /* System Slate Theme (Default Dark) */
+  --sys-color-bg-primary: #0B0C0E;      /* Deep Obsidian Black */
+  --sys-color-bg-secondary: #131518;    /* Soothing Charcoal Card */
+  --sys-color-border-muted: #1F2226;    /* Low-contrast Divider */
+  --sys-color-text-primary: #F3F4F6;    /* High-contrast Warm White */
+  --sys-color-text-muted: #8E96A0;      /* Soothing Slate Gray */
+  --sys-color-accent-amber: #F59E0B;    /* Adrenaline-fueling Focus Yellow */
+  --sys-color-accent-emerald: #10B981;  /* Completed State Green */
+  --sys-color-accent-blue: #3B82F6;     /* Focused Emergency Blue */
+
+  /* ==========================================
+     TYPOGRAPHY TOKENS
+     ========================================== */
+  --sys-font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --sys-font-display: "Space Grotesk", sans-serif;
+  --sys-font-mono: "JetBrains Mono", SFMono-Regular, Consolas, monospace;
+
+  /* Font Size Scale */
+  --sys-font-size-xs: 0.75rem;    /* 12px */
+  --sys-font-size-sm: 0.875rem;   /* 14px */
+  --sys-font-size-base: 1rem;     /* 16px */
+  --sys-font-size-lg: 1.125rem;   /* 18px */
+  --sys-font-size-xl: 1.25rem;    /* 20px */
+  --sys-font-size-2xl: 1.5rem;    /* 24px */
+  --sys-font-size-3xl: 1.875rem;  /* 30px */
+  --sys-font-size-4xl: 2.25rem;   /* 36px */
+
+  /* Font Weight Scale */
+  --sys-font-weight-normal: 400;
+  --sys-font-weight-medium: 500;
+  --sys-font-weight-semibold: 600;
+  --sys-font-weight-bold: 700;
+
+  /* Letter Spacing */
+  --sys-letter-spacing-tighter: -0.05em;
+  --sys-letter-spacing-tight: -0.025em;
+  --sys-letter-spacing-normal: 0em;
+  --sys-letter-spacing-wide: 0.025em;
+
+  /* Line Height */
+  --sys-line-height-none: 1;
+  --sys-line-height-tight: 1.25;
+  --sys-line-height-snug: 1.375;
+  --sys-line-height-normal: 1.5;
+  --sys-line-height-relaxed: 1.625;
+
+  /* ==========================================
+     SPACING SCALE
+     ========================================== */
+  --sys-space-xs: 0.25rem;  /* 4px */
+  --sys-space-sm: 0.5rem;   /* 8px */
+  --sys-space-md: 1rem;     /* 16px */
+  --sys-space-lg: 1.5rem;   /* 24px */
+  --sys-space-xl: 2.5rem;   /* 40px */
+
+  /* ==========================================
+     BORDER RADIUS SCALE
+     ========================================== */
+  --sys-radius-sm: 4px;     /* Checkboxes, micro badges */
+  --sys-radius-md: 8px;     /* Inputs, buttons */
+  --sys-radius-lg: 12px;    /* Primary cards, focus boards */
+  --sys-radius-full: 9999px;/* Circle avatars, fully rounded capsules */
+
+  /* ==========================================
+     SHADOW SCALE
+     ========================================== */
+  --sys-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+  --sys-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.5);
+  --sys-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -2px rgba(0, 0, 0, 0.6);
+  --sys-shadow-focus: 0 0 0 2px var(--sys-color-accent-amber);
+
+  /* ==========================================
+     OPACITY SCALE
+     ========================================== */
+  --sys-opacity-disabled: 0.5;
+  --sys-opacity-muted: 0.7;
+  --sys-opacity-subtle: 0.4;
+  --sys-opacity-full: 1;
+
+  /* ==========================================
+     BORDER TOKENS
+     ========================================== */
+  --sys-border-width-thin: 1px;
+  --sys-border-width-thick: 2px;
+  --sys-border-style-solid: solid;
+
+  /* ==========================================
+     MOTION KINETICS TOKENS
+     ========================================== */
+  --sys-duration-fast: 150ms;
+  --sys-duration-standard: 300ms;
+  --sys-duration-soothing: 500ms;
+
+  --sys-ease-entrance: cubic-bezier(0.16, 1, 0.3, 1); /* Soothing decelerated sweep */
+  --sys-ease-snap: cubic-bezier(0.25, 1, 0.5, 1);     /* Snappy, responsive trigger */
+  --sys-ease-pulse: cubic-bezier(0.4, 0, 0.2, 1);    /* Soft, repeating breathing wave */
+
+  /* ==========================================
+     Z-INDEX SCALE
+     ========================================== */
+  --sys-z-hide: -1;
+  --sys-z-base: 0;
+  --sys-z-docked: 10;
+  --sys-z-dropdown: 1000;
+  --sys-z-sticky: 1100;
+  --sys-z-overlay: 1200;
+  --sys-z-modal: 1300;
+  --sys-z-toast: 1400;
+
+  /* ==========================================
+     BREAKPOINTS & CONTAINER SIZES
+     ========================================== */
+  --sys-breakpoint-sm: 640px;
+  --sys-breakpoint-md: 768px;
+  --sys-breakpoint-lg: 1024px;
+  --sys-breakpoint-xl: 1280px;
+  --sys-breakpoint-2xl: 1536px;
+
+  --sys-container-sm: 640px;
+  --sys-container-md: 768px;
+  --sys-container-lg: 1024px;
+  --sys-container-xl: 1280px;
+
+  /* ==========================================
+     ICON SIZES
+     ========================================== */
+  --sys-icon-size-xs: 0.75rem;  /* 12px */
+  --sys-icon-size-sm: 1rem;     /* 16px */
+  --sys-icon-size-md: 1.25rem;  /* 20px */
+  --sys-icon-size-lg: 1.5rem;   /* 24px */
+  --sys-icon-size-xl: 2rem;     /* 32px */
+}
+
+/* High Contrast Theme Override */
+.theme-high-contrast {
+  --sys-color-bg-primary: #000000;
+  --sys-color-bg-secondary: #000000;
+  --sys-color-border-muted: #FFFFFF;
+  --sys-color-text-primary: #FFFFFF;
+  --sys-color-text-muted: #D1D5DB;
+  --sys-color-accent-amber: #FCD34D;
+  --sys-color-accent-emerald: #34D399;
+  --sys-color-accent-blue: #60A5FA;
+  --sys-shadow-sm: none;
+  --sys-shadow-md: none;
+  --sys-shadow-lg: none;
+}
+
+/* Light Theme Override (Readiness) */
+.theme-light {
+  --sys-color-bg-primary: #F9FAFB;
+  --sys-color-bg-secondary: #FFFFFF;
+  --sys-color-border-muted: #E5E7EB;
+  --sys-color-text-primary: #111827;
+  --sys-color-text-muted: #6B7280;
+  --sys-color-accent-amber: #D97706;
+  --sys-color-accent-emerald: #059669;
+  --sys-color-accent-blue: #2563EB;
+  --sys-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --sys-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --sys-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* ==========================================
+   TAILWIND THEME INTEGRATION
+   ========================================== */
+@theme {
+  --color-bg-primary: var(--sys-color-bg-primary);
+  --color-bg-secondary: var(--sys-color-bg-secondary);
+  --color-border-muted: var(--sys-color-border-muted);
+  --color-text-primary: var(--sys-color-text-primary);
+  --color-text-muted: var(--sys-color-text-muted);
+  --color-accent-amber: var(--sys-color-accent-amber);
+  --color-accent-emerald: var(--sys-color-accent-emerald);
+  --color-accent-blue: var(--sys-color-accent-blue);
+
+  --font-sans: var(--sys-font-sans);
+  --font-display: var(--sys-font-display);
+  --font-mono: var(--sys-font-mono);
+
+  --spacing-sys-xs: var(--sys-space-xs);
+  --spacing-sys-sm: var(--sys-space-sm);
+  --spacing-sys-md: var(--sys-space-md);
+  --spacing-sys-lg: var(--sys-space-lg);
+  --spacing-sys-xl: var(--sys-space-xl);
+
+  --radius-sys-sm: var(--sys-radius-sm);
+  --radius-sys-md: var(--sys-radius-md);
+  --radius-sys-lg: var(--sys-radius-lg);
+
+  --ease-entrance: var(--sys-ease-entrance);
+  --ease-snap: var(--sys-ease-snap);
+  --ease-pulse: var(--sys-ease-pulse);
+
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* ==========================================
+   CSS RESET, NORMALIZE & BOX SIZING
+   ========================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  font-family: var(--sys-font-sans);
+  background-color: var(--sys-color-bg-primary);
+  color: var(--sys-color-text-primary);
+  scroll-behavior: smooth;
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  line-height: var(--sys-line-height-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ==========================================
+   SELECTION STYLING
+   ========================================== */
+::selection {
+  background-color: var(--sys-color-accent-amber);
+  color: #000000;
+}
+
+/* ==========================================
+   SCROLLBAR STYLING (ELEGANT THIN SLATE)
+   ========================================== */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--sys-color-bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--sys-color-border-muted);
+  border-radius: var(--sys-radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--sys-color-text-muted);
+}
+
+/* ==========================================
+   ACCESSIBILITY & FOCUS RING DEFAULTS
+   ========================================== */
+input:focus, select:focus, textarea:focus, button:focus {
+  outline: none;
+}
+
+.focus-ring-default:focus-visible {
+  outline: 2px solid var(--sys-color-accent-amber);
+  outline-offset: 2px;
+}
+
+/* ==========================================
+   REDUCED MOTION SUPPORT
+   ========================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-delay: -1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    background-attachment: initial !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+}
