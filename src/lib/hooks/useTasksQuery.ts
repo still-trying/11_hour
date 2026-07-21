@@ -1,5 +1,3 @@
-
-
 import {
   useQuery,
   useMutation,
@@ -12,10 +10,8 @@ import { calculateUrgency } from '@/lib/utils/urgency'
 import { fireConfetti } from '@/lib/utils/confetti'
 import { toast } from 'sonner'
 import { useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { supabase } from '@/lib/supabase/client'
 import type { Task } from '@/types'
-
-const supabase = createClient()
 
 // Keep a local cache of deleted tasks for undo
 const deletedTasks = new Map<string, Task>()

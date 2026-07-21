@@ -1,5 +1,3 @@
-
-
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Card } from '@/components/ui/Card'
@@ -8,7 +6,7 @@ import { Input } from '@/components/ui/Input'
 import { Switch } from '@/components/ui/Switch'
 import { Badge } from '@/components/ui/Badge'
 import { useAppStore } from '@/lib/store/useAppStore'
-import { createClient } from '@/lib/supabase/client'
+import { supabase } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import {
   User,
@@ -18,8 +16,6 @@ import {
   LogOut,
   Save,
 } from 'lucide-react'
-
-const supabase = createClient()
 
 const CATEGORY_COLORS = [
   { label: 'Work', value: 'work', color: '#6C63FF' },

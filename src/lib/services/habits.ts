@@ -1,7 +1,6 @@
 import type { Habit, HabitLog } from '@/types'
-import { createClient } from '@/lib/supabase/client'
+import { supabase } from '@/lib/supabase/client'
 
-const supabase = createClient()
 
 async function apiFetch<T>(
   url: string,

@@ -1,6 +1,8 @@
-
-
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query'
 import { queryKeys } from '@/lib/query/keys'
 import {
   habitsApi,
@@ -11,9 +13,7 @@ import { useAppStore } from '@/lib/store/useAppStore'
 import { format, startOfWeek, endOfWeek } from 'date-fns'
 import { toast } from 'sonner'
 import { useEffect, useMemo, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
-
-const supabase = createClient()
+import { supabase } from '@/lib/supabase/client'
 
 export function useHabitsQuery() {
   const queryClient = useQueryClient()
@@ -127,7 +127,7 @@ export function useHabitsQuery() {
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [user, queryClient, today])
+  }, [user, queryClient])
 
   // Create habit mutation
   const createHabitMutation = useMutation({

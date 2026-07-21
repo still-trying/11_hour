@@ -1,7 +1,5 @@
 import type { Notification, Task } from '@/types'
-import { createClient } from '@/lib/supabase/client'
-
-const supabase = createClient()
+import { supabase } from '@/lib/supabase/client'
 
 export const notificationsApi = {
   fetch: async (limit = 50): Promise<Notification[]> => {

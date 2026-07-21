@@ -1,13 +1,9 @@
-
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { queryKeys } from '@/lib/query/keys'
 import { notificationsApi } from '@/lib/services/notifications'
 import { useAppStore } from '@/lib/store/useAppStore'
 import { useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
-
-const supabase = createClient()
+import { supabase } from '@/lib/supabase/client'
 
 export function useNotificationsQuery() {
   const queryClient = useQueryClient()
@@ -55,7 +51,7 @@ export function useNotificationsQuery() {
     }
   }, [user, queryClient])
 
-  // Sync DEFCON alerts
+  // Sync DEF CON alerts
   const syncDefconAlertsMutation = useMutation({
     mutationFn: () => {
       const tasks = useAppStore.getState().tasks
