@@ -1,7 +1,7 @@
-'use client'
+
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useNavigate } from 'react-router-dom'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -31,7 +31,7 @@ const CATEGORY_COLORS = [
 ]
 
 export default function SettingsPage() {
-  const router = useRouter()
+  const navigate = useNavigate()
   const { profile, user, setProfile } = useAppStore()
 
   const [fullName, setFullName] = useState(profile?.full_name || '')
@@ -68,8 +68,7 @@ export default function SettingsPage() {
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut()
-      router.push('/')
-      router.refresh()
+      navigate('/')
     } catch {
       toast.error('Failed to sign out')
     }
@@ -98,13 +97,13 @@ export default function SettingsPage() {
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               placeholder="Enter your name"
-              icon={<User className="w-4 h-4" />}
+              leftIcon={<User className="w-4 h-4" />}
             />
             <Input
               label="Email"
               value={user?.email || ''}
               disabled
-              icon={<User className="w-4 h-4" />}
+              leftIcon={<User className="w-4 h-4" />}
             />
             <div className="flex items-center gap-2 text-xs text-[#475569]">
               <Badge variant="info" size="sm">
@@ -114,7 +113,7 @@ export default function SettingsPage() {
                 {profile?.tasks_completed || 0} tasks done
               </Badge>
             </div>
-            <Button type="submit" loading={loading} icon={<Save className="w-4 h-4" />}>
+            <Button type="submit" isLoading={loading} leftIcon={<Save className="w-4 h-4" />}>
               Save Changes
             </Button>
           </form>
@@ -185,10 +184,11 @@ export default function SettingsPage() {
               </p>
             </div>
             <Button
-              variant="danger"
+              variant="ghost"
               size="sm"
+              className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
               onClick={handleLogout}
-              icon={<LogOut className="w-4 h-4" />}
+              leftIcon={<LogOut className="w-4 h-4" />}
             >
               Sign Out
             </Button>

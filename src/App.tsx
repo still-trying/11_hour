@@ -12,12 +12,14 @@ import { ThemeProvider } from '@/theme';
 import { AppRoutes } from '@/routes/AppRoutes';
 import { RuntimeProvider, ProviderComposer, ProviderEntry } from '@/runtime';
 import { AuthorizationProvider } from '@/context/AuthorizationContext';
+import { QueryProvider } from '@/lib/query/QueryProvider';
 
 const coreProviders: ProviderEntry[] = [
   { id: 'runtime-provider', component: RuntimeProvider },
   { id: 'theme-provider', component: ThemeProvider },
   { id: 'router-provider', component: BrowserRouter },
   { id: 'authz-provider', component: AuthorizationProvider },
+  { id: 'query-provider', component: QueryProvider },
 ];
 
 export default function App(): React.JSX.Element {

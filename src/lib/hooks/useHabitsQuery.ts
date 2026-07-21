@@ -1,4 +1,4 @@
-'use client'
+
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { queryKeys } from '@/lib/query/keys'
@@ -10,7 +10,7 @@ import {
 import { useAppStore } from '@/lib/store/useAppStore'
 import { format, startOfWeek, endOfWeek } from 'date-fns'
 import { toast } from 'sonner'
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
 const supabase = createClient()
@@ -34,9 +34,37 @@ export function useHabitsQuery() {
   }, [habitsQuery.data, setHabits])
 
   // Habit logs query (current week)
-  const today = new Date()
-  const weekStart = startOfWeek(today, { weekStartsOn: 1 })
-  const weekEnd = endOfWeek(today, { weekStartsOn: 1 })
+  const [today, setToday] = useState(new Date())
+
+  // Update date at midnight to ensure we always have current date
+  useEffect(() => {
+    const now = new Date()
+    const msTillMidnight =
+      new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 1,
+        0,
+        0,
+        0,
+        0
+      ).getTime() - now.getTime()
+
+    const timer = setTimeout(() => {
+      setToday(new Date())
+      // Reset timer for next day
+      const dayInMs = 24 * 60 * 60 * 1000
+      const interval = setInterval(() => {
+        setToday(new Date())
+      }, dayInMs, dayInMs)
+
+      return () => clearInterval(interval)
+    }, msTillMidnight)
+
+    return () => clearTimeout(timer)
+  }, [])
+  const weekStart = useMemo(() => startOfWeek(today, { weekStartsOn: 1 }), [today])
+  const weekEnd = useMemo(() => endOfWeek(today, { weekStartsOn: 1 }), [today])
 
   const logsQuery = useQuery({
     queryKey: queryKeys.habits.logs(format(today, 'yyyy-MM-dd')),
