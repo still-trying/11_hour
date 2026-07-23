@@ -5,7 +5,12 @@ interface AuthFormShellProps extends React.FormHTMLAttributes<HTMLFormElement> {
   children: React.ReactNode;
 }
 
-export function AuthFormShell({ children, className, onSubmit, ...props }: AuthFormShellProps): React.JSX.Element {
+export function AuthFormShell({
+  children,
+  className,
+  onSubmit,
+  ...props
+}: AuthFormShellProps): React.JSX.Element {
   return (
     <form
       noValidate

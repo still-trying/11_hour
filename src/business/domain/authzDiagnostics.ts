@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Authorization Diagnostics & Configuration Audit
- * 
+ *
  * Part of Slice 1.4: Authorization Platform & Route Access Framework.
  * Verifies routing registry integrity, assesses coverage metrics,
  * and compiles audit telemetry.
@@ -56,7 +56,8 @@ export class AuthzDiagnostics {
 
     const totalRoutesChecked = allRoutePaths.length;
     const configuredCount = totalRoutesChecked - unconfiguredRoutes.length;
-    const coverageScore = totalRoutesChecked > 0 ? Math.round((configuredCount / totalRoutesChecked) * 100) : 100;
+    const coverageScore =
+      totalRoutesChecked > 0 ? Math.round((configuredCount / totalRoutesChecked) * 100) : 100;
     const isHealthy = unconfiguredRoutes.length === 0;
 
     return {

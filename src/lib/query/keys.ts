@@ -24,4 +24,4 @@ export const queryKeys = {
     all: ['profile'] as const,
     detail: (userId: string) => ['profile', userId] as const,
   },
-} as const
+} as const;

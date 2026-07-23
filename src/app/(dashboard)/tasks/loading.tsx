@@ -1,4 +1,4 @@
-import { Skeleton, ListSkeleton } from '@/components/ui/Skeleton'
+import { Skeleton, ListSkeleton } from '@/components/ui/Skeleton';
 
 export default function TasksLoading() {
   return (
@@ -18,10 +18,7 @@ export default function TasksLoading() {
       {/* DEFCON Breakdown */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {['Meltdown', 'Critical', 'Urgent', 'Active'].map((_, i) => (
-          <div
-            key={i}
-            className="glass-card rounded-xl border border-border p-4 space-y-2"
-          >
+          <div key={i} className="glass-card rounded-xl border border-border p-4 space-y-2">
             <Skeleton className="h-8 w-12" />
             <Skeleton className="h-3 w-16" />
           </div>
@@ -34,5 +31,5 @@ export default function TasksLoading() {
       {/* Task List */}
       <ListSkeleton rows={5} />
     </div>
-  )
+  );
 }

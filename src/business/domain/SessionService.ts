@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Session Service
- * 
+ *
  * Part of Slice 1.3: Session Platform.
  * Orchestrates session actions, handles idle activity updates, triggers database synchronization,
  * and publishes events across the application.
@@ -26,7 +26,8 @@ export class SessionService {
    */
   public async createSession(user: UserProfile | null, isAnonymous = false): Promise<ISession> {
     const startTime = performance.now();
-    const sessionId = 'ses_' + Math.random().toString(36).substring(2, 15) + '_' + Date.now().toString(36);
+    const sessionId =
+      'ses_' + Math.random().toString(36).substring(2, 15) + '_' + Date.now().toString(36);
     const userId = user ? user.id : 'anonymous_user';
     const deviceId = SessionPersistence.getOrCreateDeviceId();
     const { platform, userAgent, clientVersion } = parseBrowserMetadata();
@@ -48,7 +49,9 @@ export class SessionService {
       },
     };
 
-    SessionLogging.info(`Spawning session "${sessionId}" for User "${userId}". [Device ID: ${deviceId}]`);
+    SessionLogging.info(
+      `Spawning session "${sessionId}" for User "${userId}". [Device ID: ${deviceId}]`,
+    );
 
     try {
       // Validate session structure before saving
@@ -85,7 +88,7 @@ export class SessionService {
       metadata: {
         ...session.metadata,
         lastSyncedAt: new Date().toISOString(),
-      }
+      },
     };
 
     try {

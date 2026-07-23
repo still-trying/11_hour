@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Profile Synchronization Manager
- * 
+ *
  * Part of Slice 1.5: User Identity Profile Platform.
  * Orchestrates offline-first caches, local queue buffers, optimistic merges, and conflict reconciliation.
  */
@@ -10,10 +10,7 @@ import { IProfileRepository } from './ProfileRepository';
 import { profileEventDispatcherInstance } from './ProfileEventDispatcher';
 import { ProfileLogging } from './profileLogging';
 import { ProfileErrorMapper } from './profileErrorMapping';
-import { 
-  PROFILE_LOCAL_CACHE_KEY, 
-  PROFILE_QUEUE_KEY 
-} from './profileConstants';
+import { PROFILE_LOCAL_CACHE_KEY, PROFILE_QUEUE_KEY } from './profileConstants';
 import { ProfileUtils } from './profileUtils';
 
 export class ProfileSynchronizationManager {
@@ -64,7 +61,10 @@ export class ProfileSynchronizationManager {
   /**
    * Schedules a change to be synchronized, committing it locally and queueing it.
    */
-  public async scheduleSync(uid: string, changes: Partial<IDomainUserProfile>): Promise<IDomainUserProfile> {
+  public async scheduleSync(
+    uid: string,
+    changes: Partial<IDomainUserProfile>,
+  ): Promise<IDomainUserProfile> {
     try {
       profileEventDispatcherInstance.dispatchSyncStarted(uid);
 
@@ -99,7 +99,10 @@ export class ProfileSynchronizationManager {
   /**
    * Attempts to reconcile local profile with remote server document using a last-write-wins merge strategy.
    */
-  public async reconcile(local: IDomainUserProfile, remote: IDomainUserProfile): Promise<IDomainUserProfile> {
+  public async reconcile(
+    local: IDomainUserProfile,
+    remote: IDomainUserProfile,
+  ): Promise<IDomainUserProfile> {
     const localTime = new Date(local.application.updatedAt).getTime();
     const remoteTime = new Date(remote.application.updatedAt).getTime();
 
@@ -110,7 +113,9 @@ export class ProfileSynchronizationManager {
       return local;
     } else {
       // Remote changes are newer, overwrite local cache
-      ProfileLogging.info(`Reconciliation: Remote profile is newer than local. Pulling remote state.`);
+      ProfileLogging.info(
+        `Reconciliation: Remote profile is newer than local. Pulling remote state.`,
+      );
       this.setLocalCache(local.uid, remote);
       return remote;
     }
@@ -125,10 +130,13 @@ export class ProfileSynchronizationManager {
     }
 
     this.isProcessingSync = true;
-    ProfileLogging.info(`Starting background synchronization queue processing (${this.syncQueue.length} items)...`);
+    ProfileLogging.info(
+      `Starting background synchronization queue processing (${this.syncQueue.length} items)...`,
+    );
 
     while (this.syncQueue.length > 0) {
       const activeChanges = this.syncQueue[0];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const uid = (activeChanges as any).uid;
 
       if (!uid) {
@@ -144,7 +152,7 @@ export class ProfileSynchronizationManager {
           await this.repository.saveProfile(localCached);
           profileEventDispatcherInstance.dispatchSyncCompleted(uid);
         }
-        
+
         // Remove successfully synced item
         this.syncQueue.shift();
         this.persistQueueToLocalStorage();

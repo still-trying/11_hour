@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Session Event Dispatcher
- * 
+ *
  * Part of Slice 1.3: Session Platform.
  * Adapts the global strongly-typed AppEventBus to broadcast Session Platform events,
  * allowing other decoupled modules (e.g., notification systems, logs) to respond to session actions.
@@ -35,7 +35,11 @@ export class SessionEventDispatcher {
   /**
    * Publishes session recovery, e.g., recovering from network offline drops.
    */
-  public static dispatchSessionRecovered(sessionId: string, userId: string, previousState: SessionState): void {
+  public static dispatchSessionRecovered(
+    sessionId: string,
+    userId: string,
+    previousState: SessionState,
+  ): void {
     AppEventBus.publish('SESSION_RECOVERED', {
       sessionId,
       userId,

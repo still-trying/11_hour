@@ -17,8 +17,6 @@ export {
 export { ProviderComposer, ProviderRegistry } from './providerRegistry';
 export { BootstrapEngine, BootstrapEngineClass } from './bootstrapEngine';
 export { RuntimeProvider, useRuntime } from './RuntimeContext';
-export { default as rawConfig } from '@/firebase/firebase-applet-config.json';
-
 // Resilience, Failure Classification & Recovery exports
 export * from './resilience/errors';
 export * from './resilience/recovery';

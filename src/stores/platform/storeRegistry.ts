@@ -49,7 +49,9 @@ class StoreRegistryClass {
    * Purges local user states instantly on signout or emergency cache corruption events.
    */
   resetAll(): void {
-    console.warn('⚠️ [StoreRegistry] Emergency Reset requested! Purging all active registered stores.');
+    console.warn(
+      '⚠️ [StoreRegistry] Emergency Reset requested! Purging all active registered stores.',
+    );
     for (const entry of this.registry.values()) {
       try {
         entry.reset();
@@ -76,8 +78,8 @@ class StoreRegistryClass {
    * Serializes the current runtime states of all registered stores into a single object.
    * Highly useful for telemetry logs, support tickets, and debugging.
    */
-  exportState(): Record<string, any> {
-    const stateSnapshot: Record<string, any> = {};
+  exportState(): Record<string, unknown> {
+    const stateSnapshot: Record<string, unknown> = {};
     for (const [name, entry] of this.registry.entries()) {
       stateSnapshot[name] = entry.getState();
     }

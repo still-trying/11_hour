@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { create, StateCreator } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { StoreConfig, BaseState, BaseActions, RegistryEntry } from './contracts';
@@ -14,9 +16,7 @@ import { stateLogger, stateValidator, stateErrorBoundary } from './middleware';
  * 4. Stepwise, versioned schema migrations.
  * 5. Instant registration into the centralized StoreRegistry.
  */
-export function createStateStore<S extends object, A extends object>(
-  config: StoreConfig<S, A>
-) {
+export function createStateStore<S extends object, A extends object>(config: StoreConfig<S, A>) {
   const {
     name,
     initialState,
@@ -33,15 +33,16 @@ export function createStateStore<S extends object, A extends object>(
     _lastUpdated: null,
   };
 
-  const baselineActions = (
-    set: any
-  ): BaseActions => ({
+  const baselineActions = (set: any): BaseActions => ({
     reset: () => {
-      set({
-        ...initialState,
-        ...baselineState,
-        _lastUpdated: new Date().toISOString(),
-      }, true);
+      set(
+        {
+          ...initialState,
+          ...baselineState,
+          _lastUpdated: new Date().toISOString(),
+        },
+        true,
+      );
     },
     setHydrated: (hydrated: boolean) => {
       set({ _hydrated: hydrated });
@@ -51,9 +52,7 @@ export function createStateStore<S extends object, A extends object>(
 
   const stateCreator: StateCreator<S & BaseState & A & BaseActions> = (set, get) => {
     const customSet = (partial: any, replace?: boolean) => {
-      const nextPartial = typeof partial === 'function'
-        ? (partial as any)(get())
-        : partial;
+      const nextPartial = typeof partial === 'function' ? (partial as any)(get()) : partial;
 
       const updatedPartial = {
         ...nextPartial,
@@ -72,11 +71,10 @@ export function createStateStore<S extends object, A extends object>(
   };
 
   const withMiddleware = stateErrorBoundary<any>(name)(
-    stateValidator<any>(name, middleware.schema)(
-      stateLogger<any>(name, middleware.enableLogging ?? true)(
-        stateCreator
-      )
-    )
+    stateValidator<any>(
+      name,
+      middleware.schema,
+    )(stateLogger<any>(name, middleware.enableLogging ?? true)(stateCreator)),
   );
 
   let store: any;
@@ -97,7 +95,9 @@ export function createStateStore<S extends object, A extends object>(
         for (const migration of sortedMigrations) {
           const persistedVersion = migrated._version || 0;
           if (migration.version > persistedVersion && migration.version <= currentVersion) {
-            console.info(`[StoreFactory:${name}] Migrating schema to version ${migration.version}...`);
+            console.info(
+              `[StoreFactory:${name}] Migrating schema to version ${migration.version}...`,
+            );
             migrated = await migration.migrate(migrated);
             migrated._version = migration.version;
           }
@@ -120,7 +120,7 @@ export function createStateStore<S extends object, A extends object>(
   } else {
     const nonPersistedStore = create<S & BaseState & A & BaseActions>()(withMiddleware as any);
     store = nonPersistedStore;
-    
+
     // Non-persisted stores are instantly hydrated at start
     setTimeout(() => {
       store.getState().setHydrated(true);

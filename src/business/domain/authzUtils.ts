@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Authorization Utilities
- * 
+ *
  * Part of Slice 1.4: Authorization Platform & Route Access Framework.
  * Common helper methods for set comparisons, permission validation,
  * and user role checks.
@@ -15,7 +15,7 @@ export class AuthzUtils {
    */
   public static hasAllPermissions(
     userPermissions: Set<UserPermission> | UserPermission[],
-    requiredPermissions: UserPermission[]
+    requiredPermissions: UserPermission[],
   ): boolean {
     if (!requiredPermissions || requiredPermissions.length === 0) {
       return true;
@@ -29,7 +29,7 @@ export class AuthzUtils {
    */
   public static hasAnyPermission(
     userPermissions: Set<UserPermission> | UserPermission[],
-    requiredPermissions: UserPermission[]
+    requiredPermissions: UserPermission[],
   ): boolean {
     if (!requiredPermissions || requiredPermissions.length === 0) {
       return true;

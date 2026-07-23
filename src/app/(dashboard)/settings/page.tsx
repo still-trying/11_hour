@@ -1,21 +1,15 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Card } from '@/components/ui/Card'
-import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
-import { Switch } from '@/components/ui/Switch'
-import { Badge } from '@/components/ui/Badge'
-import { useAppStore } from '@/lib/store/useAppStore'
-import { supabase } from '@/lib/supabase/client'
-import { toast } from 'sonner'
-import {
-  User,
-  Bell,
-  Shield,
-  Palette,
-  LogOut,
-  Save,
-} from 'lucide-react'
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Switch } from '@/components/ui/Switch';
+import { Badge } from '@/components/ui/Badge';
+import { useAppStore } from '@/lib/store/useAppStore';
+import { useAuth } from '@/hooks/useAuth';
+import { useAuthStore, AuthActions } from '@/stores/authStore';
+import { toast } from 'sonner';
+import { User, Bell, Shield, Palette, LogOut, Save } from 'lucide-react';
 
 const CATEGORY_COLORS = [
   { label: 'Work', value: 'work', color: '#6C63FF' },
@@ -24,51 +18,48 @@ const CATEGORY_COLORS = [
   { label: 'Finance', value: 'finance', color: '#F59E0B' },
   { label: 'Education', value: 'education', color: '#EC4899' },
   { label: 'Other', value: 'other', color: '#94A3B8' },
-]
+];
 
 export default function SettingsPage() {
-  const navigate = useNavigate()
-  const { profile, user, setProfile } = useAppStore()
+  const navigate = useNavigate();
+  const { profile, user } = useAppStore();
+  const { signOut } = useAuth();
 
-  const [fullName, setFullName] = useState(profile?.full_name || '')
-  const [loading, setLoading] = useState(false)
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true)
-  const [soundEnabled, setSoundEnabled] = useState(true)
-  const [compactView, setCompactView] = useState(false)
+  const [fullName, setFullName] = useState(profile?.full_name || '');
+  const [loading, setLoading] = useState(false);
+  const updateProfileInStore = useAuthStore((state: AuthActions) => state.updateProfile);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [compactView, setCompactView] = useState(false);
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!user) return
+    e.preventDefault();
+    if (!user) return;
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ full_name: fullName, updated_at: new Date().toISOString() })
-        .eq('id', user.id)
-
-      if (error) throw error
-
-      if (profile) {
-        setProfile({ ...profile, full_name: fullName })
+      const success = await updateProfileInStore({ displayName: fullName });
+      if (success) {
+        toast.success('Profile updated successfully');
+      } else {
+        throw new Error('Profile update returned false');
       }
-      toast.success('Profile updated successfully')
     } catch (err) {
-      toast.error('Failed to update profile')
-      console.error('Profile update error:', err)
+      toast.error('Failed to update profile');
+      console.error('Profile update error:', err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut()
-      navigate('/')
+      await signOut();
+      navigate('/');
     } catch {
-      toast.error('Failed to sign out')
+      toast.error('Failed to sign out');
     }
-  }
+  };
 
   return (
     <div className="space-y-8 max-w-3xl">
@@ -128,11 +119,7 @@ export default function SettingsPage() {
             onCheckedChange={setNotificationsEnabled}
             label="Push notifications"
           />
-          <Switch
-            checked={soundEnabled}
-            onCheckedChange={setSoundEnabled}
-            label="Sound effects"
-          />
+          <Switch checked={soundEnabled} onCheckedChange={setSoundEnabled} label="Sound effects" />
         </Card>
       </section>
 
@@ -143,20 +130,13 @@ export default function SettingsPage() {
           <h2 className="text-sm font-medium text-[#F8FAFC]">Appearance</h2>
         </div>
         <Card className="space-y-4">
-          <Switch
-            checked={compactView}
-            onCheckedChange={setCompactView}
-            label="Compact view"
-          />
+          <Switch checked={compactView} onCheckedChange={setCompactView} label="Compact view" />
           <div>
             <p className="text-xs font-medium text-[#94A3B8] mb-2">Category Colors</p>
             <div className="flex flex-wrap gap-2">
               {CATEGORY_COLORS.map((cat) => (
                 <Badge key={cat.value} variant="default" size="md">
-                  <span
-                    className="w-2 h-2 rounded-full"
-                    style={{ backgroundColor: cat.color }}
-                  />
+                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: cat.color }} />
                   {cat.label}
                 </Badge>
               ))}
@@ -175,9 +155,7 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-[#F8FAFC]">Sign out</p>
-              <p className="text-xs text-[#475569]">
-                You can sign back in anytime
-              </p>
+              <p className="text-xs text-[#475569]">You can sign back in anytime</p>
             </div>
             <Button
               variant="ghost"
@@ -192,5 +170,5 @@ export default function SettingsPage() {
         </Card>
       </section>
     </div>
-  )
+  );
 }

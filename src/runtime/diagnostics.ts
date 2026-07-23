@@ -6,8 +6,7 @@
  */
 
 import { DiagnosticMetrics, PhaseMetric } from './types';
-import { validateFirestoreConnection, config as firebaseConfig } from '@/firebase/config';
-import { isMockConfiguration } from '@/firebase/configBuilder';
+import { supabase } from '@/lib/supabase/client';
 import { StoreRegistry } from '@/stores/platform/storeRegistry';
 
 /**
@@ -16,7 +15,7 @@ import { StoreRegistry } from '@/stores/platform/storeRegistry';
 export function validateEnvironment(): boolean {
   if (typeof window === 'undefined') return false;
   if (typeof document === 'undefined') return false;
-  
+
   try {
     const testKey = '__storage_test__';
     window.localStorage.setItem(testKey, testKey);
@@ -54,30 +53,49 @@ export function getStatePlatformDiagnostics() {
 }
 
 /**
+ * Checks Supabase connectivity.
+ */
+async function checkSupabaseConnection(): Promise<boolean> {
+  try {
+    const { error } = await supabase.from('_health').select('*').limit(1);
+    return !error;
+  } catch {
+    // Table may not exist - check auth session instead as fallback
+    try {
+      const { data } = await supabase.auth.getSession();
+      return !!data.session;
+    } catch {
+      return false;
+    }
+  }
+}
+
+/**
  * Assembles a complete diagnostic report and computes a container health score.
  */
 export async function getDiagnosticReport(
   phaseMetrics: PhaseMetric[],
   totalBootstrapTimeMs: number,
-  activeErrors: string[]
+  activeErrors: string[],
 ): Promise<DiagnosticMetrics> {
   const isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true;
-  
-  // Firebase verification
-  let firebaseConnected: boolean;
+
+  // Supabase connectivity check
+  let supabaseConnected: boolean;
   try {
-    firebaseConnected = await validateFirestoreConnection();
+    supabaseConnected = await checkSupabaseConnection();
   } catch {
-    firebaseConnected = false;
+    supabaseConnected = false;
   }
 
-  const isFirebaseMock = isMockConfiguration(firebaseConfig);
+  const hasSupabaseUrl = !!import.meta.env.VITE_SUPABASE_URL?.length;
+  const isSupabaseMock = !hasSupabaseUrl;
   const stateDiag = getStatePlatformDiagnostics();
 
   // Compute Health Score (0 to 100)
   let healthScore = 100;
   if (!isOnline) healthScore -= 10;
-  if (!firebaseConnected && !isFirebaseMock) healthScore -= 30;
+  if (!supabaseConnected && !isSupabaseMock) healthScore -= 30;
   if (!stateDiag.allStoresHydrated && stateDiag.registeredStores.length > 0) healthScore -= 20;
   if (activeErrors.length > 0) healthScore -= Math.min(activeErrors.length * 15, 40);
 
@@ -90,10 +108,13 @@ export async function getDiagnosticReport(
     healthScore,
     phaseMetrics,
     totalBootstrapTimeMs,
-    environment: (import.meta.env.VITE_APP_ENV || import.meta.env.MODE || 'development') as 'development' | 'production' | 'test',
+    environment: (import.meta.env.VITE_APP_ENV || import.meta.env.MODE || 'development') as
+      | 'development'
+      | 'production'
+      | 'test',
     isOnline,
-    firebaseConnected,
-    isFirebaseMock,
+    supabaseConnected,
+    isSupabaseMock,
     registeredStores: stateDiag.registeredStores,
     allStoresHydrated: stateDiag.allStoresHydrated,
     activeErrors,
@@ -103,19 +124,18 @@ export async function getDiagnosticReport(
 
 /**
  * Dynamic Self-Healing Algorithm.
- * Fixes common runtime errors (like cache lockups or missing store initializations) gracefully.
+ * Fixes common runtime errors gracefully.
  */
 export async function attemptSelfHealing(): Promise<boolean> {
   console.warn('⚡ [Diagnostics] Initializing container self-healing routine...');
-  
+
   try {
-    // 1. Storage sanitization: check for corrupted entries and purge non-critical items
+    // 1. Storage sanitization
     if (typeof window !== 'undefined' && window.localStorage) {
       console.info('⚡ [SelfHealing] Sanitizing stale local storage blocks...');
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key && !key.includes('auth') && !key.includes('rescue')) {
-          // Keep critical data safe, clear temporary keys
           if (key.startsWith('__temp_') || key.startsWith('tmp_')) {
             localStorage.removeItem(key);
           }
@@ -127,14 +147,15 @@ export async function attemptSelfHealing(): Promise<boolean> {
     console.info('⚡ [SelfHealing] Auditing and forcing state store hydration updates...');
     StoreRegistry.triggerHydrationCheck();
 
-    // 3. Re-validate Firestore connectivity
-    console.info('⚡ [SelfHealing] Re-verifying Firestore pipeline connectivity...');
-    const dbConnected = await validateFirestoreConnection();
+    // 3. Re-validate Supabase connectivity
+    console.info('⚡ [SelfHealing] Re-verifying Supabase pipeline connectivity...');
+    const dbConnected = await checkSupabaseConnection();
 
     // 4. Return success if core issues are stabilized
     const finalState = getStatePlatformDiagnostics();
-    const resolved = finalState.allStoresHydrated && (dbConnected || isMockConfiguration(firebaseConfig));
-    
+    const hasSupabaseUrl = !!import.meta.env.VITE_SUPABASE_URL?.length;
+    const resolved = finalState.allStoresHydrated && (dbConnected || !hasSupabaseUrl);
+
     if (resolved) {
       console.info('✔ [SelfHealing] Container stabilization was successful.');
     } else {

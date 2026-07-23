@@ -8,7 +8,8 @@ export function AuthFooter(): React.JSX.Element {
         <span>SECURITY ENFORCED // SECURE GRAPH</span>
       </div>
       <p className="text-[10px] text-text-muted/40 font-sans leading-normal">
-        By continuing, you agree to our terms of deep work focus. Under extreme deadline crunches, 11_HOUR prioritizes task delivery above general administrative overhead.
+        By continuing, you agree to our terms of deep work focus. Under extreme deadline crunches,
+        11_HOUR prioritizes task delivery above general administrative overhead.
       </p>
     </div>
   );

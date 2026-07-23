@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Profile Domain Repository Interface
- * 
+ *
  * Part of Slice 1.5: User Identity Profile Platform.
  * Enforces the contract for saving, loading, deleting, and syncing active profiles
  * without exposing the underlying database SDK or storage medium.

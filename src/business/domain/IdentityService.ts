@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Identity Service Domain Controller
- * 
+ *
  * Part of Slice 1.2: Identity Infrastructure.
  * Coordinates input validation, repository calls, and central diagnostic events.
  * Fully decoupled from specific platform-rendering frameworks.
@@ -45,7 +45,7 @@ export class IdentityService {
     try {
       console.info(`🔒 [IdentityService] Attempting authentication for email: ${email}`);
       const userProfile = await this.authRepository.signInWithEmail(email, password);
-      
+
       // 2. Broadcast success event
       AppEventBus.publish('USER_SIGNED_IN', { uid: userProfile.id, email: userProfile.email });
       return userProfile;
@@ -69,7 +69,7 @@ export class IdentityService {
     try {
       console.info(`🔒 [IdentityService] Initiating registration workflow for email: ${email}`);
       const userProfile = await this.authRepository.signUpWithEmail(email, password, displayName);
-      
+
       // 2. Broadcast success event
       AppEventBus.publish('USER_SIGNED_IN', { uid: userProfile.id, email: userProfile.email });
       return userProfile;
@@ -86,12 +86,28 @@ export class IdentityService {
     try {
       console.info('🔒 [IdentityService] Spawning Google OAuth flow...');
       const userProfile = await this.authRepository.signInWithGoogle();
-      
+
       // 2. Broadcast success event
       AppEventBus.publish('USER_SIGNED_IN', { uid: userProfile.id, email: userProfile.email });
       return userProfile;
     } catch (error) {
       console.error('❌ [IdentityService] Google OAuth flow failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Authenticates a user using Facebook OAuth.
+   */
+  public async signInWithFacebook(): Promise<UserProfile> {
+    try {
+      console.info('🔒 [IdentityService] Spawning Facebook OAuth flow...');
+      const userProfile = await this.authRepository.signInWithFacebook();
+
+      AppEventBus.publish('USER_SIGNED_IN', { uid: userProfile.id, email: userProfile.email });
+      return userProfile;
+    } catch (error) {
+      console.error('❌ [IdentityService] Facebook OAuth flow failed:', error);
       throw error;
     }
   }

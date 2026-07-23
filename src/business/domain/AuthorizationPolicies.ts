@@ -1,11 +1,16 @@
 /**
  * 11_HOUR - Authorization Policies
- * 
+ *
  * Part of Slice 1.4: Authorization Platform & Route Access Framework.
  * Declares domain rules mapping to security policies evaluated by PolicyEvaluator.
  */
 
-import { IAuthorizationPolicy, IAuthorizationContext, UserRole, UserPermission } from './authzTypes';
+import {
+  IAuthorizationPolicy,
+  IAuthorizationContext,
+  UserRole,
+  UserPermission,
+} from './authzTypes';
 import { AuthzUtils } from './authzUtils';
 
 /**
@@ -28,7 +33,9 @@ export class GuestOnlyPolicy implements IAuthorizationPolicy {
   public description = 'Restricts access to unauthenticated guests only.';
 
   public evaluate(context: IAuthorizationContext): boolean {
-    return !context.userId || context.userId === 'anonymous_user' || context.role === UserRole.GUEST;
+    return (
+      !context.userId || context.userId === 'anonymous_user' || context.role === UserRole.GUEST
+    );
   }
 }
 
@@ -40,7 +47,9 @@ export class AuthenticatedPolicy implements IAuthorizationPolicy {
   public description = 'Restricts access to authenticated sessions.';
 
   public evaluate(context: IAuthorizationContext): boolean {
-    return !!context.userId && context.userId !== 'anonymous_user' && context.role !== UserRole.GUEST;
+    return (
+      !!context.userId && context.userId !== 'anonymous_user' && context.role !== UserRole.GUEST
+    );
   }
 }
 

@@ -1,4 +1,4 @@
-import { Skeleton, StatsCardSkeleton } from '@/components/ui/Skeleton'
+import { Skeleton, StatsCardSkeleton } from '@/components/ui/Skeleton';
 
 export default function SettingsLoading() {
   return (
@@ -59,5 +59,5 @@ export default function SettingsLoading() {
         </div>
       </div>
     </div>
-  )
+  );
 }

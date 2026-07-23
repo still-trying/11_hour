@@ -17,7 +17,7 @@ export const RUNTIME_VERSION = '1.0.0-rc1';
 export const STARTUP_PHASES_ORDER: StartupPhase[] = [
   StartupPhase.ENVIRONMENT,
   StartupPhase.CONFIGURATION,
-  StartupPhase.FIREBASE_PLATFORM,
+  StartupPhase.DATA_PLATFORM,
   StartupPhase.THEME_ENGINE,
   StartupPhase.STATE_PLATFORM,
   StartupPhase.ROUTER,
@@ -32,7 +32,7 @@ export const STARTUP_PHASES_ORDER: StartupPhase[] = [
 export const PHASE_DESCRIPTIONS: Record<StartupPhase, string> = {
   [StartupPhase.ENVIRONMENT]: 'Verifying system environment variables...',
   [StartupPhase.CONFIGURATION]: 'Assembling and validating application configurations...',
-  [StartupPhase.FIREBASE_PLATFORM]: 'Connecting to Firebase Infrastructure Services...',
+  [StartupPhase.DATA_PLATFORM]: 'Connecting to Supabase data infrastructure...',
   [StartupPhase.THEME_ENGINE]: 'Configuring dark mode theme and motion profiles...',
   [StartupPhase.STATE_PLATFORM]: 'Instantiating global Zustand stores & local cache...',
   [StartupPhase.ROUTER]: 'Initializing application navigation routing maps...',
@@ -49,14 +49,9 @@ export const DEFAULT_RUNTIME_CONFIG: RuntimeConfig = {
   version: RUNTIME_VERSION,
   debug: true,
   apiTimeoutMs: 10000,
-  firebase: {
-    apiKey: 'mock-api-key-Vibe2Ship',
-    authDomain: 'mock-auth-domain.firebaseapp.com',
-    projectId: 'mock-project-id',
-    storageBucket: 'mock-project-id.appspot.com',
-    messagingSenderId: '123456789012',
-    appId: '1:123456789012:web:abcdef1234567890',
-    firestoreDatabaseId: '(default)',
+  supabase: {
+    url: '',
+    connected: false,
   },
   features: {
     enableAnalytics: false,

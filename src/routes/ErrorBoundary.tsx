@@ -1,5 +1,13 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
-import { AlertTriangle, RotateCcw, Home, Terminal, ShieldAlert, Wifi, Database } from 'lucide-react';
+import {
+  AlertTriangle,
+  RotateCcw,
+  Home,
+  Terminal,
+  ShieldAlert,
+  Wifi,
+  Database,
+} from 'lucide-react';
 import { classifyError, BaseResilienceError } from '@/runtime/resilience/errors';
 import { RuntimeRecoveryManager } from '@/runtime/resilience/recovery';
 import { useUIStore, RuntimeStatus } from '@/stores/uiStore';
@@ -145,7 +153,7 @@ export class ErrorBoundary extends Component<Props, State> {
                 <span>Timestamp</span>
                 <span>{err?.timestamp ? new Date(err.timestamp).toLocaleTimeString() : ''}</span>
               </div>
-              
+
               <div className="mt-2 text-gray-200 border-t border-gray-800/60 pt-2 break-all whitespace-pre-wrap leading-relaxed max-h-24 overflow-y-auto">
                 {err?.message || 'An unexpected layout or rendering exception occurred.'}
               </div>
@@ -156,15 +164,23 @@ export class ErrorBoundary extends Component<Props, State> {
               <div className="bg-[#121626]/40 border border-gray-800/50 rounded-xl p-4 flex flex-col gap-3">
                 <div className="flex items-center gap-2 text-gray-200 border-b border-gray-800/40 pb-2">
                   <Terminal className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className="text-xs font-bold font-mono uppercase tracking-wider">Live Diagnostics</span>
+                  <span className="text-xs font-bold font-mono uppercase tracking-wider">
+                    Live Diagnostics
+                  </span>
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-3 text-[10px] font-mono text-gray-400">
                   <div className="bg-gray-950/40 border border-gray-850/40 p-2 rounded flex items-center justify-between">
                     <span className="flex items-center gap-1.5 text-gray-500">
                       <Wifi className="w-3 h-3 text-emerald-500" /> Web Link
                     </span>
-                    <span className={diag.isOnline ? 'text-emerald-400 font-semibold' : 'text-red-400 font-semibold'}>
+                    <span
+                      className={
+                        diag.isOnline
+                          ? 'text-emerald-400 font-semibold'
+                          : 'text-red-400 font-semibold'
+                      }
+                    >
                       {diag.isOnline ? 'ONLINE' : 'OFFLINE'}
                     </span>
                   </div>
@@ -173,8 +189,16 @@ export class ErrorBoundary extends Component<Props, State> {
                     <span className="flex items-center gap-1.5 text-gray-500">
                       <Database className="w-3 h-3 text-amber-500" /> Cloud Store
                     </span>
-                    <span className={diag.firebaseConnected ? 'text-emerald-400 font-semibold' : diag.isFirebaseMock ? 'text-yellow-500 font-semibold' : 'text-red-400 font-semibold'}>
-                      {diag.isFirebaseMock ? 'MOCK' : diag.firebaseConnected ? 'ONLINE' : 'OFFLINE'}
+                    <span
+                      className={
+                        diag.supabaseConnected
+                          ? 'text-emerald-400 font-semibold'
+                          : diag.isSupabaseMock
+                            ? 'text-yellow-500 font-semibold'
+                            : 'text-red-400 font-semibold'
+                      }
+                    >
+                      {diag.isSupabaseMock ? 'MOCK' : diag.supabaseConnected ? 'ONLINE' : 'OFFLINE'}
                     </span>
                   </div>
 
@@ -182,7 +206,9 @@ export class ErrorBoundary extends Component<Props, State> {
                     <span className="flex items-center gap-1.5 text-gray-500">
                       <ShieldAlert className="w-3 h-3 text-[#EF4444]" /> Platform Health
                     </span>
-                    <span className={`font-black ${diag.healthScore > 75 ? 'text-emerald-400' : diag.healthScore > 45 ? 'text-yellow-400' : 'text-red-400'}`}>
+                    <span
+                      className={`font-black ${diag.healthScore > 75 ? 'text-emerald-400' : diag.healthScore > 45 ? 'text-yellow-400' : 'text-red-400'}`}
+                    >
                       {diag.healthScore}/100
                     </span>
                   </div>
@@ -191,7 +217,8 @@ export class ErrorBoundary extends Component<Props, State> {
             )}
 
             <p className="text-[11px] text-gray-500 font-mono leading-relaxed text-center">
-              Vibe2Ship automated recovery filters are monitoring this crash. You can run automated self-healing, retry the sandbox, or escape to the landing zone.
+              Vibe2Ship automated recovery filters are monitoring this crash. You can run automated
+              self-healing, retry the sandbox, or escape to the landing zone.
             </p>
 
             {/* Action Buttons */}

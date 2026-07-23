@@ -3,12 +3,7 @@
   "mcp": {
     "firebase": {
       "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "firebase-tools@14.15.2",
-        "experimental:mcp"
-      ]
+      "command": ["npx", "-y", "firebase-tools@14.15.2", "experimental:mcp"]
     }
   }
 }

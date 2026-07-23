@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Profile System Constants and Configuration
- * 
+ *
  * Part of Slice 1.5: User Identity Profile Platform.
  * Governs fallback default settings, validation boundaries, and metadata structures.
  */

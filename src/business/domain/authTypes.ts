@@ -1,9 +1,9 @@
 /**
  * 11_HOUR - Authentication Type Definitions
- * 
+ *
  * Part of Slice 1.2: Identity Infrastructure.
  * Defines domain-level enum values, error codes, interfaces, and the custom
- * AuthException class to keep the business logic layer fully decoupled from Firebase SDK types.
+ * AuthException class to keep the business logic layer fully decoupled from infrastructure SDK types.
  */
 
 /**
@@ -49,7 +49,10 @@ export class AuthException extends Error {
       name: this.name,
       code: this.code,
       message: this.message,
-      originalMessage: this.originalError instanceof Error ? this.originalError.message : String(this.originalError || ''),
+      originalMessage:
+        this.originalError instanceof Error
+          ? this.originalError.message
+          : String(this.originalError || ''),
     };
   }
 }

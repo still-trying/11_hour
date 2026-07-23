@@ -28,14 +28,14 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
           'inline-flex items-center gap-1 font-sans font-medium rounded-full border whitespace-nowrap',
           variantStyles[variant],
           sizeStyles[size],
-          className
+          className,
         )}
         {...props}
       >
         {children}
       </span>
     );
-  }
+  },
 );
 
 Badge.displayName = 'Badge';

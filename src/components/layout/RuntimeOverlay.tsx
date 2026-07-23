@@ -10,7 +10,7 @@ import {
   AlertCircle,
   Info,
   Cpu,
-  RefreshCw as ResetIcon
+  RefreshCw as ResetIcon,
 } from 'lucide-react';
 import { useUIStore } from '@/stores/uiStore';
 import { useNotificationStore, ToastNotification } from '@/stores/notificationStore';
@@ -22,16 +22,26 @@ import { classifyError } from '@/runtime/resilience/errors';
  * Integrates toasts, maintenance-shield, and interactive developer panel.
  */
 export function RuntimeOverlay(): React.JSX.Element {
-  const { status, isOnline, isMaintenance, showDiagnosticOverlay, setOnline, setMaintenance, triggerFatalCrash, recoverFromCrash, toggleDiagnosticOverlay } = useUIStore();
+  const {
+    status,
+    isOnline,
+    isMaintenance,
+    showDiagnosticOverlay,
+    setOnline,
+    setMaintenance,
+    triggerFatalCrash,
+    recoverFromCrash,
+    toggleDiagnosticOverlay,
+  } = useUIStore();
   const { notifications, dismissNotification, addNotification } = useNotificationStore();
 
   // Compute store hydration stats dynamically on-demand during render
   const activeStoreStats = showDiagnosticOverlay
-    ? StoreRegistry.getRegisteredStoreNames().map(name => {
+    ? StoreRegistry.getRegisteredStoreNames().map((name) => {
         const entry = StoreRegistry.get(name);
         return {
           name,
-          hydrated: entry?.isHydrated() ?? false
+          hydrated: entry?.isHydrated() ?? false,
         };
       })
     : [];
@@ -41,25 +51,30 @@ export function RuntimeOverlay(): React.JSX.Element {
     try {
       if (type === 'network') {
         setOnline(false);
-      } else if (type === 'firebase') {
-        const mockFirestoreError = new Error(JSON.stringify({
-          error: 'permission-denied: Missing or insufficient permissions.',
-          operationType: 'write',
-          path: 'rescue-episodes/test-uuid',
-          authInfo: { userId: null, email: null }
-        }));
-        throw mockFirestoreError;
+      } else if (type === 'database') {
+        const mockDbError = new Error(
+          'DatabaseError: PostgREST returned 401 — invalid or expired API key.',
+        );
+        throw mockDbError;
       } else if (type === 'ai') {
-        throw new Error('Gemini model quota exceeded: RESOURCE_EXHAUSTED. Please verify API rate budget.');
+        throw new Error(
+          'Gemini model quota exceeded: RESOURCE_EXHAUSTED. Please verify API rate budget.',
+        );
       } else if (type === 'validation') {
-        throw new Error('ValidationError: Zod parsing failed. Required key "targetDeadline" is invalid date-string.');
+        throw new Error(
+          'ValidationError: Zod parsing failed. Required key "targetDeadline" is invalid date-string.',
+        );
       } else {
         throw new Error('Unspecified fatal component exception inside layout tree.');
       }
     } catch (err) {
       const classified = classifyError(err);
       addNotification(`Simulated ${classified.category} failure triggered.`, 'warning', 4000);
-      if (classified.severity === 'FATAL' || classified.category === 'PERMISSION' || type === 'fatal') {
+      if (
+        classified.severity === 'FATAL' ||
+        classified.category === 'PERMISSION' ||
+        type === 'fatal'
+      ) {
         triggerFatalCrash(classified);
       }
     }
@@ -72,7 +87,7 @@ export function RuntimeOverlay(): React.JSX.Element {
       {/* ==========================================
          TOAST NOTIFICATIONS INFRASTRUCTURE
          ========================================== */}
-      <div 
+      <div
         id="toast-notification-layer"
         className="fixed top-5 right-5 z-[100] flex flex-col gap-3 w-full max-w-sm pointer-events-none"
       >
@@ -105,7 +120,9 @@ export function RuntimeOverlay(): React.JSX.Element {
                 <div className="flex items-start gap-2.5">
                   <div className="shrink-0 mt-0.5">{iconMap[notif.type]}</div>
                   <div className="flex flex-col">
-                    <p className="text-xs font-semibold text-white leading-relaxed">{notif.message}</p>
+                    <p className="text-xs font-semibold text-white leading-relaxed">
+                      {notif.message}
+                    </p>
                     <span className="text-[8px] font-mono text-gray-500 mt-1 uppercase tracking-wider">
                       {notif.id} • {new Date(notif.createdAt).toLocaleTimeString()}
                     </span>
@@ -166,14 +183,18 @@ export function RuntimeOverlay(): React.JSX.Element {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <h1 className="text-lg font-bold text-white tracking-tight">System Under Maintenance</h1>
+                <h1 className="text-lg font-bold text-white tracking-tight">
+                  System Under Maintenance
+                </h1>
                 <p className="text-[11px] text-gray-500 font-mono tracking-widest uppercase mt-0.5">
                   11_HOUR // WORKSPACE ADJUSTMENTS
                 </p>
               </div>
 
               <p className="text-xs text-gray-400 leading-relaxed">
-                Core database connections and execution loops are being fine-tuned to maintain absolute robust integrity. Standard workspaces are temporarily shielded to prevent save state conflicts.
+                Core database connections and execution loops are being fine-tuned to maintain
+                absolute robust integrity. Standard workspaces are temporarily shielded to prevent
+                save state conflicts.
               </p>
 
               <div className="bg-gray-950/60 border border-gray-800/50 rounded-lg p-3 w-full font-mono text-[10px] text-accent-amber/80 flex items-center justify-center gap-2">
@@ -213,7 +234,9 @@ export function RuntimeOverlay(): React.JSX.Element {
                 <div className="flex items-center justify-between border-b border-gray-800/60 pb-2">
                   <div className="flex items-center gap-2">
                     <Cpu className="w-4 h-4 text-accent-amber" />
-                    <span className="font-bold text-gray-200 uppercase tracking-tight">Diagnostic Control</span>
+                    <span className="font-bold text-gray-200 uppercase tracking-tight">
+                      Diagnostic Control
+                    </span>
                   </div>
                   <button
                     onClick={toggleDiagnosticOverlay}
@@ -231,13 +254,19 @@ export function RuntimeOverlay(): React.JSX.Element {
                   </div>
                   <div className="flex justify-between">
                     <span>NETWORK STATUS</span>
-                    <span className={isOnline ? 'text-emerald-400 font-bold' : 'text-red-400 font-bold'}>
+                    <span
+                      className={isOnline ? 'text-emerald-400 font-bold' : 'text-red-400 font-bold'}
+                    >
                       {isOnline ? 'ONLINE' : 'OFFLINE'}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span>MAINTENANCE BLOCK</span>
-                    <span className={isMaintenance ? 'text-accent-amber font-bold' : 'text-gray-500 font-bold'}>
+                    <span
+                      className={
+                        isMaintenance ? 'text-accent-amber font-bold' : 'text-gray-500 font-bold'
+                      }
+                    >
                       {isMaintenance ? 'ACTIVE' : 'INACTIVE'}
                     </span>
                   </div>
@@ -245,12 +274,16 @@ export function RuntimeOverlay(): React.JSX.Element {
 
                 {/* Simulated Fault Inducers */}
                 <div className="flex flex-col gap-2">
-                  <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Inject Fault Simulations</span>
+                  <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
+                    Inject Fault Simulations
+                  </span>
                   <div className="grid grid-cols-2 gap-1.5 font-mono text-[10px]">
                     <button
                       onClick={() => setOnline(!isOnline)}
                       className={`py-1.5 px-2 rounded border cursor-pointer text-left transition-all ${
-                        isOnline ? 'bg-gray-950/40 border-gray-850 hover:bg-gray-900 text-gray-300' : 'bg-red-950/20 border-red-900/30 text-red-400'
+                        isOnline
+                          ? 'bg-gray-950/40 border-gray-850 hover:bg-gray-900 text-gray-300'
+                          : 'bg-red-950/20 border-red-900/30 text-red-400'
                       }`}
                     >
                       Toggle {isOnline ? 'Offline' : 'Online'}
@@ -258,16 +291,18 @@ export function RuntimeOverlay(): React.JSX.Element {
                     <button
                       onClick={() => setMaintenance(!isMaintenance)}
                       className={`py-1.5 px-2 rounded border cursor-pointer text-left transition-all ${
-                        isMaintenance ? 'bg-amber-950/20 border-amber-900/30 text-amber-400' : 'bg-gray-950/40 border-gray-850 hover:bg-gray-900 text-gray-300'
+                        isMaintenance
+                          ? 'bg-amber-950/20 border-amber-900/30 text-amber-400'
+                          : 'bg-gray-950/40 border-gray-850 hover:bg-gray-900 text-gray-300'
                       }`}
                     >
                       Toggle Maintenance
                     </button>
                     <button
-                      onClick={() => triggerMockError('firebase')}
+                      onClick={() => triggerMockError('database')}
                       className="py-1.5 px-2 rounded border border-gray-850 bg-gray-950/40 text-gray-300 hover:bg-gray-900 text-left cursor-pointer"
                     >
-                      Mock Firebase Err
+                      Mock Database Err
                     </button>
                     <button
                       onClick={() => triggerMockError('ai')}
@@ -292,12 +327,20 @@ export function RuntimeOverlay(): React.JSX.Element {
 
                 {/* State Store Hydrations */}
                 <div className="flex flex-col gap-1.5">
-                  <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Hydration Monitor</span>
+                  <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
+                    Hydration Monitor
+                  </span>
                   <div className="flex flex-col gap-1 max-h-24 overflow-y-auto bg-gray-950/30 rounded p-2 border border-gray-800/40 font-mono text-[9px] leading-relaxed">
                     {activeStoreStats.map((st) => (
                       <div key={st.name} className="flex justify-between items-center">
-                        <span className="text-gray-500 text-[8px] truncate max-w-[170px]">{st.name}</span>
-                        <span className={st.hydrated ? 'text-emerald-500 font-bold' : 'text-amber-500 font-bold'}>
+                        <span className="text-gray-500 text-[8px] truncate max-w-[170px]">
+                          {st.name}
+                        </span>
+                        <span
+                          className={
+                            st.hydrated ? 'text-emerald-500 font-bold' : 'text-amber-500 font-bold'
+                          }
+                        >
                           {st.hydrated ? 'HYDRATED' : 'STALE'}
                         </span>
                       </div>

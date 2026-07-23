@@ -9,7 +9,6 @@ export enum StorageType {
   MEMORY = 'memory',
   SESSION = 'session',
   LOCAL = 'local',
-  FIRESTORE = 'firestore', // Prepared for future synchronization
 }
 
 export const STORE_NAMES = {
@@ -24,7 +23,7 @@ export const STORE_NAMES = {
   NOTIFICATION: 'notification-store',
 } as const;
 
-export type StoreName = typeof STORE_NAMES[keyof typeof STORE_NAMES];
+export type StoreName = (typeof STORE_NAMES)[keyof typeof STORE_NAMES];
 
 export const STORE_VERSIONS: Record<StoreName, number> = {
   [STORE_NAMES.AUTH]: 1,

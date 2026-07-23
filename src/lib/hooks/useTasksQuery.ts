@@ -1,24 +1,54 @@
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-} from '@tanstack/react-query'
-import { queryKeys } from '@/lib/query/keys'
-import { tasksApi, type CreateTaskInput, type UpdateTaskInput } from '@/lib/services/tasks'
-import { useAppStore } from '@/lib/store/useAppStore'
-import { calculateUrgency } from '@/lib/utils/urgency'
-import { fireConfetti } from '@/lib/utils/confetti'
-import { toast } from 'sonner'
-import { useEffect } from 'react'
-import { supabase } from '@/lib/supabase/client'
-import type { Task } from '@/types'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/query/keys';
+import { tasksApi, type CreateTaskInput, type UpdateTaskInput } from '@/lib/services/tasks';
+import { useAppStore } from '@/lib/store/useAppStore';
+import { calculateUrgency } from '@/lib/utils/urgency';
+import { fireConfetti } from '@/lib/utils/confetti';
+import { toast } from 'sonner';
+import { useEffect } from 'react';
+import { supabase } from '@/lib/supabase/client';
+import type { Task } from '@/types';
 
-// Keep a local cache of deleted tasks for undo
-const deletedTasks = new Map<string, Task>()
+// Keep a local cache of recently deleted tasks for undo.
+// Capped at MAX_UNDO_ENTRIES and auto-purged after UNDO_TTL_MS to prevent memory leaks.
+const MAX_UNDO_ENTRIES = 10;
+const UNDO_TTL_MS = 30_000;
+
+const deletedTasks = new Map<string, { task: Task; timer: ReturnType<typeof setTimeout> }>();
+
+function cacheForUndo(task: Task) {
+  // Defensive: clear any existing timer for this task ID (e.g., if deleted → undone → deleted again)
+  const existing = deletedTasks.get(task.id);
+  if (existing) clearTimeout(existing.timer);
+
+  // Evict the oldest entry if at capacity
+  if (deletedTasks.size >= MAX_UNDO_ENTRIES) {
+    const oldestKey = deletedTasks.keys().next().value;
+    if (oldestKey !== undefined) {
+      clearTimeout(deletedTasks.get(oldestKey)!.timer);
+      deletedTasks.delete(oldestKey);
+    }
+  }
+
+  // Auto-purge after the TTL
+  const timer = setTimeout(() => {
+    deletedTasks.delete(task.id);
+  }, UNDO_TTL_MS);
+
+  deletedTasks.set(task.id, { task, timer });
+}
+
+function clearUndoEntry(id: string) {
+  const entry = deletedTasks.get(id);
+  if (entry) {
+    clearTimeout(entry.timer);
+    deletedTasks.delete(id);
+  }
+}
 
 export function useTasksQuery() {
-  const queryClient = useQueryClient()
-  const { setTasks, user } = useAppStore()
+  const queryClient = useQueryClient();
+  const { setTasks, user } = useAppStore();
 
   // Main query for fetching tasks
   const tasksQuery = useQuery({
@@ -26,18 +56,18 @@ export function useTasksQuery() {
     queryFn: () => tasksApi.fetch(),
     enabled: !!user,
     select: (data) => data,
-  })
+  });
 
   // Sync tasks to Zustand store whenever data changes
   useEffect(() => {
     if (tasksQuery.data) {
-      setTasks(tasksQuery.data)
+      setTasks(tasksQuery.data);
     }
-  }, [tasksQuery.data, setTasks])
+  }, [tasksQuery.data, setTasks]);
 
   // Realtime subscription to invalidate queries
   useEffect(() => {
-    if (!user) return
+    if (!user) return;
 
     const channel = supabase
       .channel('tasks-changes')
@@ -50,15 +80,15 @@ export function useTasksQuery() {
           filter: `user_id=eq.${user.id}`,
         },
         () => {
-          queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all })
+          queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
         },
       )
-      .subscribe()
+      .subscribe();
 
     return () => {
-      supabase.removeChannel(channel)
-    }
-  }, [user, queryClient])
+      supabase.removeChannel(channel);
+    };
+  }, [user, queryClient]);
 
   // Create task mutation
   const createTaskMutation = useMutation({
@@ -70,106 +100,118 @@ export function useTasksQuery() {
             input.estimated_minutes || 30,
             0,
           )
-        : { score: 0, level: 'calm' }
+        : { score: 0, level: 'calm' };
 
       return tasksApi.create({
         ...input,
         urgency_score: urgencyInfo.score,
         defcon_level: urgencyInfo.level,
-      })
+      });
     },
     onSuccess: (newTask) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
       toast.success('Task created', {
         action: {
           label: 'Undo',
           onClick: async () => {
-            await tasksApi.delete(newTask.id)
-            queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all })
+            await tasksApi.delete(newTask.id);
+            queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
           },
         },
-      })
+      });
     },
     onError: (err: Error) => {
-      toast.error(err.message || 'Failed to create task')
+      toast.error(err.message || 'Failed to create task');
     },
-  })
+  });
 
   // Update task mutation
   const updateTaskMutation = useMutation({
     mutationFn: (input: UpdateTaskInput) => tasksApi.update(input),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
     },
     onError: (err: Error) => {
-      toast.error(err.message || 'Failed to update task')
+      toast.error(err.message || 'Failed to update task');
     },
-  })
+  });
 
   // Complete task mutation
   const completeTaskMutation = useMutation({
     mutationFn: (id: string) => tasksApi.complete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all })
-      fireConfetti({ particleCount: 40, spread: 60 })
+      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
+      // Update profile completion stats
+      if (user?.id) {
+        tasksApi.updateProfileStats(user.id, 'complete').catch(console.error);
+      }
+      fireConfetti({ particleCount: 40, spread: 60 });
     },
     onError: (err: Error) => {
-      toast.error(err.message || 'Failed to complete task')
+      toast.error(err.message || 'Failed to complete task');
     },
-  })
+  });
 
   // Delete task mutation
   const deleteTaskMutation = useMutation({
     mutationFn: async (id: string) => {
       // Cache the task for undo before deleting
-      const task = tasksQuery.data?.find((t) => t.id === id)
-      if (task) deletedTasks.set(id, task)
-      await tasksApi.delete(id)
+      const task = tasksQuery.data?.find((t) => t.id === id);
+      if (task) cacheForUndo(task);
+      await tasksApi.delete(id);
     },
     onSuccess: (_, id) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all })
-      const task = deletedTasks.get(id)
-      if (task) {
+      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
+      // Decrement profile stats if deleting a completed task
+      const entry = deletedTasks.get(id);
+      if (entry && entry.task.status === 'completed' && user?.id) {
+        tasksApi.updateProfileStats(user.id, 'uncomplete').catch(console.error);
+      }
+      if (entry) {
         toast.error('Task deleted', {
           action: {
             label: 'Undo',
             onClick: async () => {
+              const { task } = entry;
               await tasksApi.create({
                 title: task.title,
                 description: task.description,
                 deadline: task.deadline,
                 importance: task.importance,
                 estimated_minutes: task.estimated_minutes,
+                urgency_score: task.urgency_score,
+                defcon_level: task.defcon_level,
                 category: task.category,
                 ai_generated_steps: task.ai_generated_steps,
-              })
-              deletedTasks.delete(id)
-              queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all })
+              });
+              // Re-increment profile stats if the restored task was completed
+              clearUndoEntry(id);
+              queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
             },
           },
-        })
+        });
       }
     },
     onError: (err: Error) => {
-      toast.error(err.message || 'Failed to delete task')
+      toast.error(err.message || 'Failed to delete task');
     },
-  })
+  });
 
   // Snooze task mutation
   const snoozeTaskMutation = useMutation({
     mutationFn: async (id: string) => {
-      const task = tasksQuery.data?.find((t) => t.id === id)
-      if (!task) throw new Error('Task not found')
-      return tasksApi.snooze(id, task.times_snoozed || 0)
+      const task = tasksQuery.data?.find((t) => t.id === id);
+      if (!task) throw new Error('Task not found');
+      return tasksApi.snooze(id, task.times_snoozed || 0);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all })
-      toast.success('Task snoozed')
+      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
+      toast.success('Task snoozed');
     },
     onError: (err: Error) => {
-      toast.error(err.message || 'Failed to snooze task')
+      toast.error(err.message || 'Failed to snooze task');
     },
-  })
+  });
 
   return {
     // Data
@@ -190,5 +232,5 @@ export function useTasksQuery() {
     isCreating: createTaskMutation.isPending,
     isUpdating: updateTaskMutation.isPending,
     isCompleting: completeTaskMutation.isPending,
-  }
+  };
 }

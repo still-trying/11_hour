@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Profile System Logging
- * 
+ *
  * Part of Slice 1.5: User Identity Profile Platform.
  * Enforces structured diagnostic outputs and event trails for audit compliance.
  */
@@ -14,7 +14,7 @@ export class ProfileLogging {
   public static info(message: string, context?: Record<string, unknown>): void {
     console.info(
       `${PROFILE_LOG_PREFIX} ${message}`,
-      context ? `| Context: ${JSON.stringify(context)}` : ''
+      context ? `| Context: ${JSON.stringify(context)}` : '',
     );
   }
 
@@ -25,7 +25,7 @@ export class ProfileLogging {
     console.warn(
       `${PROFILE_LOG_PREFIX} ⚠️ ${message}`,
       error ? `| Error: ${error instanceof Error ? error.message : String(error)}` : '',
-      context ? `| Context: ${JSON.stringify(context)}` : ''
+      context ? `| Context: ${JSON.stringify(context)}` : '',
     );
   }
 
@@ -36,14 +36,19 @@ export class ProfileLogging {
     console.error(
       `${PROFILE_LOG_PREFIX} ❌ ${message}`,
       error ? `| Error: ${error instanceof Error ? error.message : String(error)}` : '',
-      context ? `| Context: ${JSON.stringify(context)}` : ''
+      context ? `| Context: ${JSON.stringify(context)}` : '',
     );
   }
 
   /**
    * Emits audit logs for sensitive operations (e.g. data deletions or settings modifications).
    */
-  public static audit(action: string, uid: string, success: boolean, context?: Record<string, unknown>): void {
+  public static audit(
+    action: string,
+    uid: string,
+    success: boolean,
+    context?: Record<string, unknown>,
+  ): void {
     const payload = {
       timestamp: new Date().toISOString(),
       action,

@@ -1,12 +1,17 @@
 /**
  * 11_HOUR - Access Decision Manager
- * 
+ *
  * Part of Slice 1.4: Authorization Platform & Route Access Framework.
  * Implements consensus-driven and gatekeeper strategies to combine multiple
  * evaluated policies into a final single access decision.
  */
 
-import { IAuthorizationPolicy, IAuthorizationContext, IAccessDecision, DecisionStrategy } from './authzTypes';
+import {
+  IAuthorizationPolicy,
+  IAuthorizationContext,
+  IAccessDecision,
+  DecisionStrategy,
+} from './authzTypes';
 import { PolicyEvaluator } from './PolicyEvaluator';
 
 export class AccessDecisionManager {
@@ -23,7 +28,7 @@ export class AccessDecisionManager {
     policies: IAuthorizationPolicy[],
     context: IAuthorizationContext,
     strategy: DecisionStrategy = DecisionStrategy.UNANIMOUS,
-    correlationId?: string
+    correlationId?: string,
   ): IAccessDecision {
     const cid = correlationId || 'dec_' + Math.random().toString(36).substring(2, 11);
     const evaluatedPolicies: string[] = [];

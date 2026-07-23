@@ -97,4 +97,3 @@ export default function AuthPage(): React.JSX.Element {
     </div>
   );
 }
-

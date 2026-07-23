@@ -13,12 +13,12 @@ export const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
         className={cn(
           'animate-pulse bg-bg-secondary/60 border border-border-muted/30',
           variant === 'circular' ? 'rounded-full' : 'rounded-sys-md',
-          className
+          className,
         )}
         {...props}
       />
     );
-  }
+  },
 );
 
 Skeleton.displayName = 'Skeleton';
@@ -65,7 +65,10 @@ export function ListSkeleton({ rows = 3 }: ListSkeletonProps) {
   return (
     <div className="bg-bg-secondary/40 border border-border-muted/30 rounded-sys-lg p-5 space-y-4">
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="flex items-center justify-between border-b border-border-muted/20 pb-3 last:border-0 last:pb-0">
+        <div
+          key={i}
+          className="flex items-center justify-between border-b border-border-muted/20 pb-3 last:border-0 last:pb-0"
+        >
           <div className="flex items-center gap-3 flex-1">
             <Skeleton variant="circular" className="h-5 w-5" />
             <div className="space-y-1.5 flex-1">

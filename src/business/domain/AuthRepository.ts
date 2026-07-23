@@ -1,9 +1,9 @@
 /**
  * 11_HOUR - Authentication Repository Interface
- * 
+ *
  * Part of Slice 1.2: Identity Infrastructure.
  * Establishes the decoupled domain contract for authentication gateways, fully hiding
- * raw Firebase Auth SDK references from the application and presentation layers.
+ * raw Auth SDK references from the application and presentation layers.
  */
 
 import { UserProfile } from '@/types';
@@ -36,6 +36,12 @@ export interface IAuthRepository {
    * Returns the authenticated user's profile.
    */
   signInWithGoogle(): Promise<UserProfile>;
+
+  /**
+   * Signs in a user using Facebook OAuth.
+   * Returns the authenticated user's profile.
+   */
+  signInWithFacebook(): Promise<UserProfile>;
 
   /**
    * Logs out the current user session.

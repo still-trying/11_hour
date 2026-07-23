@@ -9,6 +9,41 @@ interface GoogleButtonProps {
   disabled?: boolean;
 }
 
+interface FacebookButtonProps {
+  onClick: () => void;
+  disabled?: boolean;
+}
+
+export function FacebookButton({ onClick, disabled = false }: FacebookButtonProps): React.JSX.Element {
+  const { reducedMotion } = useTheme();
+
+  const animationProps = !reducedMotion
+    ? {
+        whileHover: { scale: 1.01 },
+        whileTap: { scale: 0.99 },
+        transition: { type: 'spring' as const, stiffness: 400, damping: 15 },
+      }
+    : {};
+
+  return (
+    <motion.button
+      type="button"
+      disabled={disabled}
+      onClick={onClick}
+      className={cn(
+        'w-full inline-flex items-center justify-center gap-sys-sm px-sys-md py-2.5 h-10 border border-border-muted rounded-sys-md font-sans text-sm font-medium text-text-primary bg-[#1877F2] hover:bg-[#166FE5] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-amber transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-white',
+      )}
+      {...animationProps}
+    >
+      {/* Facebook SVG Vector */}
+      <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+      </svg>
+      <span>Connect with Facebook</span>
+    </motion.button>
+  );
+}
+
 export function GoogleButton({ onClick, disabled = false }: GoogleButtonProps): React.JSX.Element {
   const { reducedMotion } = useTheme();
 
@@ -26,12 +61,17 @@ export function GoogleButton({ onClick, disabled = false }: GoogleButtonProps): 
       disabled={disabled}
       onClick={onClick}
       className={cn(
-        'w-full inline-flex items-center justify-center gap-sys-sm px-sys-md py-2.5 h-10 border border-border-muted rounded-sys-md font-sans text-sm font-medium text-text-primary bg-bg-primary hover:bg-bg-secondary/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-amber transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
+        'w-full inline-flex items-center justify-center gap-sys-sm px-sys-md py-2.5 h-10 border border-border-muted rounded-sys-md font-sans text-sm font-medium text-text-primary bg-bg-primary hover:bg-bg-secondary/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-amber transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer',
       )}
       {...animationProps}
     >
       {/* Google SVG Vector */}
-      <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg
+        className="w-4 h-4 shrink-0"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
         <path
           d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
           fill="#4285F4"

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { UseBoundStore, StoreApi } from 'zustand';
 import { z } from 'zod';
 
@@ -11,14 +13,14 @@ type SelectorBuilder<S> = {
  * Automatic Selector Generator Utility
  * Wraps any global Zustand store hook to automatically expose single-key selectors,
  * protecting React views from heavy re-render cascades.
- * 
+ *
  * Example Usage:
  *   const useAuthStore = createStateStore(...);
  *   const auth = createSelectors(useAuthStore);
  *   const user = auth.use.user(); // Re-renders only when the 'user' field mutates.
  */
 export function createSelectors<S extends UseBoundStore<StoreApi<object>>>(
-  store: S
+  store: S,
 ): S & SelectorBuilder<ReturnType<S['getState']>> {
   const storeWithSelectors = store as any;
   storeWithSelectors.use = {};
@@ -39,7 +41,7 @@ export function createSelectors<S extends UseBoundStore<StoreApi<object>>>(
 export function useValidatedSlice<S, V>(
   useStore: UseBoundStore<StoreApi<S>>,
   selector: (state: S) => V,
-  schema: z.ZodSchema<V>
+  schema: z.ZodSchema<V>,
 ) {
   const targetValue = useStore(selector);
 

@@ -21,7 +21,7 @@ export function RootLayout(): React.JSX.Element {
     <ErrorBoundary>
       {/* Dynamic SEO/Document Title Synchronization */}
       <DocumentTitleSync />
-      
+
       {/* Standard base outer wrapper */}
       <div className="min-h-screen bg-bg-primary text-text-primary font-sans transition-colors duration-300">
         <Outlet />

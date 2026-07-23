@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Session Diagnostics Engine
- * 
+ *
  * Part of Slice 1.3: Session Platform.
  * Compiles real-time health scores, latency scales, and device fingerprints for debugging.
  */
@@ -23,7 +23,10 @@ export class SessionDiagnostics {
   /**
    * Performs real-time system diagnostics to audit session stability and storage responsiveness.
    */
-  public static run(currentSession: ISession | null, currentStoreState: SessionState): SessionDiagnosticReport {
+  public static run(
+    currentSession: ISession | null,
+    currentStoreState: SessionState,
+  ): SessionDiagnosticReport {
     const startTime = performance.now();
     let browserStorageResponsive = false;
 
@@ -42,7 +45,7 @@ export class SessionDiagnostics {
 
     const isOnline = typeof window !== 'undefined' ? navigator.onLine : true;
     const deviceId = SessionPersistence.getOrCreateDeviceId();
-    
+
     let timeSinceLastActiveMs = 0;
     if (currentSession) {
       const lastActive = new Date(currentSession.lastActiveAt).getTime();
@@ -55,7 +58,7 @@ export class SessionDiagnostics {
     if (!isOnline) healthScore -= 20;
     if (timeSinceLastActiveMs > 30 * 60 * 1000) healthScore -= 15; // long idle times
     if (currentStoreState === SessionState.EXPIRED) healthScore -= 30;
-    
+
     const driftLatencyMs = performance.now() - startTime;
 
     return {

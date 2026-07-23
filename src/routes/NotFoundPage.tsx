@@ -9,7 +9,6 @@ export default function NotFoundPage(): React.JSX.Element {
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] px-sys-md text-center animate-fade-in">
       <div className="flex flex-col items-center gap-sys-md max-w-sm">
-        
         {/* Animated Icon */}
         <div className="w-16 h-16 rounded-full bg-bg-secondary border border-border-muted flex items-center justify-center shadow-lg">
           <Compass size={28} className="text-accent-amber animate-pulse" />
@@ -23,7 +22,8 @@ export default function NotFoundPage(): React.JSX.Element {
             Viewport Not Mapable
           </h1>
           <p className="text-text-muted text-sm leading-relaxed mt-1">
-            The coordinates you requested do not correlate with an active execution layout or routing path.
+            The coordinates you requested do not correlate with an active execution layout or
+            routing path.
           </p>
         </div>
 

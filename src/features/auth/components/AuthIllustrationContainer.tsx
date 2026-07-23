@@ -67,7 +67,7 @@ export function AuthIllustrationContainer(): React.JSX.Element {
         {/* Giant Digital Hourglass/Timer Circle */}
         <div className="relative w-48 h-48 rounded-full border border-border-muted flex items-center justify-center bg-bg-primary/40 backdrop-blur-md shadow-2xl">
           <div className="absolute inset-2 rounded-full border border-dashed border-border-muted/50 animate-spin-slow" />
-          
+
           <div className="flex flex-col items-center justify-center text-center">
             <span className="font-mono text-xs tracking-widest text-text-muted/60 mb-1 uppercase">
               Deadline Crunch
@@ -106,9 +106,7 @@ export function AuthIllustrationContainer(): React.JSX.Element {
                 </span>
               </div>
             </div>
-            <span className="text-[10px] font-mono text-accent-blue animate-pulse">
-              ANALYZING
-            </span>
+            <span className="text-[10px] font-mono text-accent-blue animate-pulse">ANALYZING</span>
           </motion.div>
 
           {/* Card 2: Micro Step Complete */}
@@ -142,7 +140,8 @@ export function AuthIllustrationContainer(): React.JSX.Element {
           A Cognitive Buffer Under Crunch
         </h3>
         <p className="text-[11px] text-text-muted/80 leading-relaxed font-sans">
-          When time is your biggest threat, administration is your enemy. 11_HOUR instantly structures raw thoughts into micro-tasks, driving immediate, calming execution.
+          When time is your biggest threat, administration is your enemy. 11_HOUR instantly
+          structures raw thoughts into micro-tasks, driving immediate, calming execution.
         </p>
       </div>
     </div>

@@ -9,7 +9,7 @@ import { BreadcrumbItem, ScrollPosition } from './types';
  */
 export function updateDocumentTitle(path: string): void {
   const meta = ROUTE_METADATA_REGISTRY[path];
-  
+
   // Support dynamic resolution of parameterized paths (like /rescue/:id or /reflection/:id)
   let resolvedTitle: string;
   if (meta?.title) {
@@ -85,7 +85,7 @@ export function getBreadcrumbs(pathname: string): BreadcrumbItem[] {
   segments.forEach((segment, index) => {
     currentPath += `/${segment}`;
     const isLast = index === segments.length - 1;
-    
+
     // Convert url segment to clean uppercase/camelcase readable title
     let label = segment.charAt(0).toUpperCase() + segment.slice(1);
     if (segment === 'rescue') label = 'Rescue Board';
@@ -95,7 +95,7 @@ export function getBreadcrumbs(pathname: string): BreadcrumbItem[] {
     if (segment === 'settings') label = 'Preferences';
 
     // Handle numerical/ID parameterized segments
-    if (segment.match(/^[a-zA-Z0-9_-]{20,}$/) || segment.length > 10 && !isNaN(Number(segment))) {
+    if (segment.match(/^[a-zA-Z0-9_-]{20,}$/) || (segment.length > 10 && !isNaN(Number(segment)))) {
       label = `Task ID: ${segment.substring(0, 6)}...`;
     }
 

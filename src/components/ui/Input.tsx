@@ -10,7 +10,10 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type = 'text', label, error, helperText, leftIcon, rightIcon, id, ...props }, ref) => {
+  (
+    { className, type = 'text', label, error, helperText, leftIcon, rightIcon, id, ...props },
+    ref,
+  ) => {
     const generatedId = useId();
     const inputId = id || generatedId;
     const errorId = `${inputId}-error`;
@@ -37,16 +40,15 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             type={type}
             ref={ref}
             aria-invalid={!!error}
-            aria-describedby={cn(
-              error ? errorId : undefined,
-              helperText ? helperId : undefined
-            )}
+            aria-describedby={cn(error ? errorId : undefined, helperText ? helperId : undefined)}
             className={cn(
               'w-full bg-bg-primary border text-sm text-text-primary px-3.5 py-2.5 rounded-sys-md h-10 transition-colors font-sans focus:outline-none focus:border-accent-amber focus:ring-1 focus:ring-accent-amber focus-visible:ring-1 focus-visible:ring-accent-amber disabled:opacity-50 disabled:cursor-not-allowed',
               leftIcon ? 'pl-10' : '',
               rightIcon ? 'pr-10' : '',
-              error ? 'border-red-500/80 focus:border-red-500 focus:ring-red-500' : 'border-border-muted hover:border-text-muted/40',
-              className
+              error
+                ? 'border-red-500/80 focus:border-red-500 focus:ring-red-500'
+                : 'border-border-muted hover:border-text-muted/40',
+              className,
             )}
             {...props}
           />
@@ -66,16 +68,13 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           </p>
         )}
         {!error && helperText && (
-          <p
-            id={helperId}
-            className="text-xs text-text-muted/70 font-sans tracking-wide mt-0.5"
-          >
+          <p id={helperId} className="text-xs text-text-muted/70 font-sans tracking-wide mt-0.5">
             {helperText}
           </p>
         )}
       </div>
     );
-  }
+  },
 );
 
 Input.displayName = 'Input';

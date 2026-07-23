@@ -68,11 +68,11 @@ export function RuntimeProvider({ children }: RuntimeProviderProps): React.JSX.E
     try {
       const activeErrors: string[] = [];
       if (engineState.error) activeErrors.push(engineState.error);
-      
+
       const report = await getDiagnosticReport(
         engineState.phaseMetrics,
         engineState.phaseMetrics.reduce((acc, curr) => acc + curr.durationMs, 0),
-        activeErrors
+        activeErrors,
       );
       setDiagnostics(report);
       return report;
@@ -107,7 +107,7 @@ export function RuntimeProvider({ children }: RuntimeProviderProps): React.JSX.E
 
   // Pull diagnostics if bootstrap fails
   useEffect(() => {
-    let timer: NodeJS.Timeout | null = null;
+    let timer: ReturnType<typeof setTimeout> | null = null;
     if (engineState.status === 'failed') {
       timer = setTimeout(() => {
         triggerDiagnostics().catch(console.error);
@@ -137,7 +137,7 @@ export function RuntimeProvider({ children }: RuntimeProviderProps): React.JSX.E
   const totalPhases = Object.keys(StartupPhase).length;
   const progressPercent = Math.min(
     100,
-    Math.round((engineState.completedPhases.length / totalPhases) * 100)
+    Math.round((engineState.completedPhases.length / totalPhases) * 100),
   );
 
   return (
@@ -176,8 +176,12 @@ export function RuntimeProvider({ children }: RuntimeProviderProps): React.JSX.E
                     <span className="font-mono text-lg font-black text-black">11</span>
                   </div>
                   <div>
-                    <h1 className="text-lg font-bold tracking-tight text-white leading-none">11_HOUR</h1>
-                    <p className="text-[11px] text-gray-500 font-mono mt-0.5 uppercase tracking-wider">The Last-Minute Life Saver</p>
+                    <h1 className="text-lg font-bold tracking-tight text-white leading-none">
+                      11_HOUR
+                    </h1>
+                    <p className="text-[11px] text-gray-500 font-mono mt-0.5 uppercase tracking-wider">
+                      The Last-Minute Life Saver
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 px-2.5 py-1 rounded-md bg-gray-900/60 border border-gray-800/80 font-mono text-[10px] text-gray-400">
@@ -192,9 +196,13 @@ export function RuntimeProvider({ children }: RuntimeProviderProps): React.JSX.E
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <RefreshCw className="w-4 h-4 text-emerald-400 animate-spin" />
-                      <span className="text-sm font-semibold text-gray-200">System Core Booting</span>
+                      <span className="text-sm font-semibold text-gray-200">
+                        System Core Booting
+                      </span>
                     </div>
-                    <span className="font-mono text-xs font-semibold text-emerald-400">{progressPercent}%</span>
+                    <span className="font-mono text-xs font-semibold text-emerald-400">
+                      {progressPercent}%
+                    </span>
                   </div>
 
                   {/* Progress Bar Container */}
@@ -220,18 +228,30 @@ export function RuntimeProvider({ children }: RuntimeProviderProps): React.JSX.E
                         <div
                           key={phase}
                           className={`flex items-start gap-2 transition-all duration-200 ${
-                            isActive ? 'text-emerald-400 bg-emerald-950/10 -mx-2 px-2 py-0.5 rounded border-l-2 border-emerald-500' : 'text-gray-500'
+                            isActive
+                              ? 'text-emerald-400 bg-emerald-950/10 -mx-2 px-2 py-0.5 rounded border-l-2 border-emerald-500'
+                              : 'text-gray-500'
                           } ${isCompleted ? 'text-gray-300' : ''}`}
                         >
-                          {isCompleted && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />}
-                          {isActive && <Activity className="w-3.5 h-3.5 text-emerald-400 animate-pulse shrink-0 mt-0.5" />}
-                          {isPending && <div className="w-3.5 h-3.5 rounded-full border border-gray-800 shrink-0 mt-0.5" />}
-                          
+                          {isCompleted && (
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                          )}
+                          {isActive && (
+                            <Activity className="w-3.5 h-3.5 text-emerald-400 animate-pulse shrink-0 mt-0.5" />
+                          )}
+                          {isPending && (
+                            <div className="w-3.5 h-3.5 rounded-full border border-gray-800 shrink-0 mt-0.5" />
+                          )}
+
                           <div className="flex-1">
                             <span className="font-semibold tracking-wide text-[10px] uppercase block leading-none mb-0.5">
                               {phase.replace('_', ' ')}
                             </span>
-                            {isActive && <span className="text-[10px] text-gray-400 leading-none">{PHASE_DESCRIPTIONS[phase]}</span>}
+                            {isActive && (
+                              <span className="text-[10px] text-gray-400 leading-none">
+                                {PHASE_DESCRIPTIONS[phase]}
+                              </span>
+                            )}
                           </div>
                         </div>
                       );
@@ -249,9 +269,14 @@ export function RuntimeProvider({ children }: RuntimeProviderProps): React.JSX.E
                       <AlertTriangle className="w-5 h-5 text-red-500" />
                     </div>
                     <div className="flex-1">
-                      <h2 className="text-sm font-bold text-white tracking-tight">Startup Verification Interrupted</h2>
+                      <h2 className="text-sm font-bold text-white tracking-tight">
+                        Startup Verification Interrupted
+                      </h2>
                       <p className="text-[11px] text-gray-400 font-mono mt-1 leading-relaxed">
-                        Failed Phase: <span className="text-[#FCA5A5] uppercase font-bold">{engineState.failedPhase?.replace('_', ' ')}</span>
+                        Failed Phase:{' '}
+                        <span className="text-[#FCA5A5] uppercase font-bold">
+                          {engineState.failedPhase?.replace('_', ' ')}
+                        </span>
                       </p>
                       <div className="bg-gray-950 border border-gray-800 rounded p-3 font-mono text-[10px] text-red-400 mt-3 whitespace-pre-wrap break-all leading-normal max-h-36 overflow-y-auto">
                         {engineState.error}
@@ -265,11 +290,15 @@ export function RuntimeProvider({ children }: RuntimeProviderProps): React.JSX.E
                       <div className="flex items-center justify-between border-b border-gray-800/60 pb-3">
                         <div className="flex items-center gap-2">
                           <Terminal className="w-4 h-4 text-emerald-400" />
-                          <span className="text-xs font-bold tracking-tight text-gray-200">Runtime Diagnostic Logs</span>
+                          <span className="text-xs font-bold tracking-tight text-gray-200">
+                            Runtime Diagnostic Logs
+                          </span>
                         </div>
                         <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-gray-900 border border-gray-800 font-mono text-[9px] text-gray-400">
-                          CONTAINER HEALTH: 
-                          <span className={`font-black ${diagnostics.healthScore > 70 ? 'text-emerald-400' : diagnostics.healthScore > 40 ? 'text-yellow-400' : 'text-red-400'}`}>
+                          CONTAINER HEALTH:
+                          <span
+                            className={`font-black ${diagnostics.healthScore > 70 ? 'text-emerald-400' : diagnostics.healthScore > 40 ? 'text-yellow-400' : 'text-red-400'}`}
+                          >
                             {diagnostics.healthScore}/100
                           </span>
                         </div>
@@ -277,28 +306,58 @@ export function RuntimeProvider({ children }: RuntimeProviderProps): React.JSX.E
 
                       <div className="grid grid-cols-2 gap-3 text-[10px] font-mono text-gray-400">
                         <div className="bg-gray-950/60 border border-gray-800/40 rounded p-2.5 flex flex-col gap-1">
-                          <span className="text-[9px] uppercase tracking-wider text-gray-500">Device Pipelines</span>
+                          <span className="text-[9px] uppercase tracking-wider text-gray-500">
+                            Device Pipelines
+                          </span>
                           <span className="text-gray-200 flex items-center justify-between mt-1">
                             Internet Connection
-                            <span className={diagnostics.isOnline ? 'text-emerald-400 font-semibold' : 'text-red-400 font-semibold'}>
+                            <span
+                              className={
+                                diagnostics.isOnline
+                                  ? 'text-emerald-400 font-semibold'
+                                  : 'text-red-400 font-semibold'
+                              }
+                            >
                               {diagnostics.isOnline ? 'ONLINE' : 'OFFLINE'}
                             </span>
                           </span>
                         </div>
                         <div className="bg-gray-950/60 border border-gray-800/40 rounded p-2.5 flex flex-col gap-1">
-                          <span className="text-[9px] uppercase tracking-wider text-gray-500">Cloud Host Infrastructure</span>
+                          <span className="text-[9px] uppercase tracking-wider text-gray-500">
+                            Cloud Database
+                          </span>
                           <span className="text-gray-200 flex items-center justify-between mt-1">
-                            Firestore Engine
-                            <span className={diagnostics.firebaseConnected ? 'text-emerald-400 font-semibold' : diagnostics.isFirebaseMock ? 'text-yellow-400 font-semibold' : 'text-red-400 font-semibold'}>
-                              {diagnostics.isFirebaseMock ? 'MOCK' : diagnostics.firebaseConnected ? 'CONNECTED' : 'DISCONNECTED'}
+                            Supabase Engine
+                            <span
+                              className={
+                                diagnostics.supabaseConnected
+                                  ? 'text-emerald-400 font-semibold'
+                                  : diagnostics.isSupabaseMock
+                                    ? 'text-yellow-400 font-semibold'
+                                    : 'text-red-400 font-semibold'
+                              }
+                            >
+                              {diagnostics.isSupabaseMock
+                                ? 'MOCK'
+                                : diagnostics.supabaseConnected
+                                  ? 'CONNECTED'
+                                  : 'DISCONNECTED'}
                             </span>
                           </span>
                         </div>
                         <div className="bg-gray-950/60 border border-gray-800/40 rounded p-2.5 flex flex-col gap-1 col-span-2">
-                          <span className="text-[9px] uppercase tracking-wider text-gray-500">State Platform Registry</span>
+                          <span className="text-[9px] uppercase tracking-wider text-gray-500">
+                            State Platform Registry
+                          </span>
                           <span className="text-gray-200 flex items-center justify-between mt-1">
                             Registered Stores ({diagnostics.registeredStores.length})
-                            <span className={diagnostics.allStoresHydrated ? 'text-emerald-400 font-semibold' : 'text-yellow-400 font-semibold'}>
+                            <span
+                              className={
+                                diagnostics.allStoresHydrated
+                                  ? 'text-emerald-400 font-semibold'
+                                  : 'text-yellow-400 font-semibold'
+                              }
+                            >
                               {diagnostics.allStoresHydrated ? 'ALL HYDRATED' : 'HYDRATION DELAYED'}
                             </span>
                           </span>
@@ -326,7 +385,7 @@ export function RuntimeProvider({ children }: RuntimeProviderProps): React.JSX.E
                       )}
                       {isSelfHealing ? 'Resolving...' : 'Run Self-Healing'}
                     </button>
-                    
+
                     <button
                       onClick={restartBootstrap}
                       disabled={isSelfHealing || isDiagnosing}

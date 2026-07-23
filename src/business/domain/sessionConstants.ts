@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Session Constants
- * 
+ *
  * Part of Slice 1.3: Session Platform.
  * Defines central constants for storage, timeout rates, device fingerprint tags,
  * and high-fidelity error messaging.
@@ -42,14 +42,24 @@ export const SESSION_TIMEOUTS = {
  * Ensures the end-user receives constructive advice rather than raw database or SDK trace noise.
  */
 export const SESSION_ERROR_MESSAGES: Record<SessionErrorCode, string> = {
-  [SessionErrorCode.INITIALIZATION_FAILED]: 'We could not establish your active workspace session. Please try signing in again.',
-  [SessionErrorCode.HYDRATION_FAILED]: 'We had trouble loading your session from local cache. Recovering clean state...',
-  [SessionErrorCode.RECOVERY_FAILED]: 'Session recovery failed. Please verify your connection or sign in again.',
-  [SessionErrorCode.VALIDATION_FAILED]: 'Your active session data could not be validated. For security, we must restart your session.',
-  [SessionErrorCode.PERSISTENCE_FAILED]: 'We failed to save your session progress locally. Your workspace remains active, but updates may not persist.',
-  [SessionErrorCode.SESSION_EXPIRED]: 'Your active session has expired due to inactivity. Please sign in again to resume your workspace.',
-  [SessionErrorCode.TRANSIENT_NETWORK_DROP]: 'Connection temporarily dropped. We are operating offline and queuing sync commands.',
-  [SessionErrorCode.RECONCILIATION_CONFLICT]: 'A session conflict occurred on another device. Synchronizing with the latest remote state...',
-  [SessionErrorCode.SIGN_OUT_FAILED]: 'We had trouble securely logging you out. Local session data has been purged regardless.',
-  [SessionErrorCode.UNKNOWN]: 'An unexpected session anomaly occurred. Our engineers are investigating.',
+  [SessionErrorCode.INITIALIZATION_FAILED]:
+    'We could not establish your active workspace session. Please try signing in again.',
+  [SessionErrorCode.HYDRATION_FAILED]:
+    'We had trouble loading your session from local cache. Recovering clean state...',
+  [SessionErrorCode.RECOVERY_FAILED]:
+    'Session recovery failed. Please verify your connection or sign in again.',
+  [SessionErrorCode.VALIDATION_FAILED]:
+    'Your active session data could not be validated. For security, we must restart your session.',
+  [SessionErrorCode.PERSISTENCE_FAILED]:
+    'We failed to save your session progress locally. Your workspace remains active, but updates may not persist.',
+  [SessionErrorCode.SESSION_EXPIRED]:
+    'Your active session has expired due to inactivity. Please sign in again to resume your workspace.',
+  [SessionErrorCode.TRANSIENT_NETWORK_DROP]:
+    'Connection temporarily dropped. We are operating offline and queuing sync commands.',
+  [SessionErrorCode.RECONCILIATION_CONFLICT]:
+    'A session conflict occurred on another device. Synchronizing with the latest remote state...',
+  [SessionErrorCode.SIGN_OUT_FAILED]:
+    'We had trouble securely logging you out. Local session data has been purged regardless.',
+  [SessionErrorCode.UNKNOWN]:
+    'An unexpected session anomaly occurred. Our engineers are investigating.',
 };

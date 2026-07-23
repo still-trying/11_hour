@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Route Authorization Manager
- * 
+ *
  * Part of Slice 1.4: Authorization Platform & Route Access Framework.
  * Acts as the principal route access gatekeeper, returning exact redirect destinations,
  * mapping unauthorized actions, and integrating the Redirect Strategy.
@@ -32,10 +32,10 @@ export class RouteAuthorizationManager {
    */
   public async checkRoute(path: string, session: ISession | null): Promise<IRouteAccessEvaluation> {
     const correlationId = 'rt_chk_' + Math.random().toString(36).substring(2, 11);
-    
+
     try {
       const decision = await this.service.evaluateRouteAccess(path, session, correlationId);
-      
+
       if (decision.granted) {
         return {
           allowed: true,
@@ -52,7 +52,11 @@ export class RouteAuthorizationManager {
         decision,
       };
     } catch (error) {
-      AuthzLogger.error(`Route check failed catastrophically for path "${path}":`, error, correlationId);
+      AuthzLogger.error(
+        `Route check failed catastrophically for path "${path}":`,
+        error,
+        correlationId,
+      );
       return {
         allowed: false,
         redirectUrl: ROUTES.AUTH, // Safe default in catastrophic cases
@@ -82,7 +86,9 @@ export class RouteAuthorizationManager {
       return `${ROUTES.AUTH}?${REDIRECT_QUERY_PARAM}=${encodedTarget}`;
     } else {
       // 2. Forbidden Handler: Redirect authenticated but unauthorized user to Dashboard
-      AuthzLogger.warn(`Forbidden access attempt to "${path}" for authenticated user "${session.userId}". Redirecting to safety.`);
+      AuthzLogger.warn(
+        `Forbidden access attempt to "${path}" for authenticated user "${session.userId}". Redirecting to safety.`,
+      );
       return config.redirectPath || ROUTES.DASHBOARD;
     }
   }

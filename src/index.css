@@ -1,36 +1,36 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   /* ==========================================
      COLOR TOKENS & SEMANTIC TOKENS
      ========================================== */
   /* System Slate Theme (Default Dark) */
-  --sys-color-bg-primary: #0B0C0E;      /* Deep Obsidian Black */
-  --sys-color-bg-secondary: #131518;    /* Soothing Charcoal Card */
-  --sys-color-border-muted: #1F2226;    /* Low-contrast Divider */
-  --sys-color-text-primary: #F3F4F6;    /* High-contrast Warm White */
-  --sys-color-text-muted: #8E96A0;      /* Soothing Slate Gray */
-  --sys-color-accent-amber: #F59E0B;    /* Adrenaline-fueling Focus Yellow */
-  --sys-color-accent-emerald: #10B981;  /* Completed State Green */
-  --sys-color-accent-blue: #3B82F6;     /* Focused Emergency Blue */
+  --sys-color-bg-primary: #0b0c0e; /* Deep Obsidian Black */
+  --sys-color-bg-secondary: #131518; /* Soothing Charcoal Card */
+  --sys-color-border-muted: #1f2226; /* Low-contrast Divider */
+  --sys-color-text-primary: #f3f4f6; /* High-contrast Warm White */
+  --sys-color-text-muted: #8e96a0; /* Soothing Slate Gray */
+  --sys-color-accent-amber: #f59e0b; /* Adrenaline-fueling Focus Yellow */
+  --sys-color-accent-emerald: #10b981; /* Completed State Green */
+  --sys-color-accent-blue: #3b82f6; /* Focused Emergency Blue */
 
   /* ==========================================
      TYPOGRAPHY TOKENS
      ========================================== */
-  --sys-font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --sys-font-display: "Space Grotesk", sans-serif;
-  --sys-font-mono: "JetBrains Mono", SFMono-Regular, Consolas, monospace;
+  --sys-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --sys-font-display: 'Space Grotesk', sans-serif;
+  --sys-font-mono: 'JetBrains Mono', SFMono-Regular, Consolas, monospace;
 
   /* Font Size Scale */
-  --sys-font-size-xs: 0.75rem;    /* 12px */
-  --sys-font-size-sm: 0.875rem;   /* 14px */
-  --sys-font-size-base: 1rem;     /* 16px */
-  --sys-font-size-lg: 1.125rem;   /* 18px */
-  --sys-font-size-xl: 1.25rem;    /* 20px */
-  --sys-font-size-2xl: 1.5rem;    /* 24px */
-  --sys-font-size-3xl: 1.875rem;  /* 30px */
-  --sys-font-size-4xl: 2.25rem;   /* 36px */
+  --sys-font-size-xs: 0.75rem; /* 12px */
+  --sys-font-size-sm: 0.875rem; /* 14px */
+  --sys-font-size-base: 1rem; /* 16px */
+  --sys-font-size-lg: 1.125rem; /* 18px */
+  --sys-font-size-xl: 1.25rem; /* 20px */
+  --sys-font-size-2xl: 1.5rem; /* 24px */
+  --sys-font-size-3xl: 1.875rem; /* 30px */
+  --sys-font-size-4xl: 2.25rem; /* 36px */
 
   /* Font Weight Scale */
   --sys-font-weight-normal: 400;
@@ -54,19 +54,19 @@
   /* ==========================================
      SPACING SCALE
      ========================================== */
-  --sys-space-xs: 0.25rem;  /* 4px */
-  --sys-space-sm: 0.5rem;   /* 8px */
-  --sys-space-md: 1rem;     /* 16px */
-  --sys-space-lg: 1.5rem;   /* 24px */
-  --sys-space-xl: 2.5rem;   /* 40px */
+  --sys-space-xs: 0.25rem; /* 4px */
+  --sys-space-sm: 0.5rem; /* 8px */
+  --sys-space-md: 1rem; /* 16px */
+  --sys-space-lg: 1.5rem; /* 24px */
+  --sys-space-xl: 2.5rem; /* 40px */
 
   /* ==========================================
      BORDER RADIUS SCALE
      ========================================== */
-  --sys-radius-sm: 4px;     /* Checkboxes, micro badges */
-  --sys-radius-md: 8px;     /* Inputs, buttons */
-  --sys-radius-lg: 12px;    /* Primary cards, focus boards */
-  --sys-radius-full: 9999px;/* Circle avatars, fully rounded capsules */
+  --sys-radius-sm: 4px; /* Checkboxes, micro badges */
+  --sys-radius-md: 8px; /* Inputs, buttons */
+  --sys-radius-lg: 12px; /* Primary cards, focus boards */
+  --sys-radius-full: 9999px; /* Circle avatars, fully rounded capsules */
 
   /* ==========================================
      SHADOW SCALE
@@ -97,10 +97,13 @@
   --sys-duration-fast: 150ms;
   --sys-duration-standard: 300ms;
   --sys-duration-soothing: 500ms;
+  --sys-duration-slow: 2000ms;
+  --sys-duration-slower: 3000ms;
+  --sys-duration-slowest: 4000ms;
 
   --sys-ease-entrance: cubic-bezier(0.16, 1, 0.3, 1); /* Soothing decelerated sweep */
-  --sys-ease-snap: cubic-bezier(0.25, 1, 0.5, 1);     /* Snappy, responsive trigger */
-  --sys-ease-pulse: cubic-bezier(0.4, 0, 0.2, 1);    /* Soft, repeating breathing wave */
+  --sys-ease-snap: cubic-bezier(0.25, 1, 0.5, 1); /* Snappy, responsive trigger */
+  --sys-ease-pulse: cubic-bezier(0.4, 0, 0.2, 1); /* Soft, repeating breathing wave */
 
   /* ==========================================
      Z-INDEX SCALE
@@ -131,23 +134,38 @@
   /* ==========================================
      ICON SIZES
      ========================================== */
-  --sys-icon-size-xs: 0.75rem;  /* 12px */
-  --sys-icon-size-sm: 1rem;     /* 16px */
-  --sys-icon-size-md: 1.25rem;  /* 20px */
-  --sys-icon-size-lg: 1.5rem;   /* 24px */
-  --sys-icon-size-xl: 2rem;     /* 32px */
+  --sys-icon-size-xs: 0.75rem; /* 12px */
+  --sys-icon-size-sm: 1rem; /* 16px */
+  --sys-icon-size-md: 1.25rem; /* 20px */
+  --sys-icon-size-lg: 1.5rem; /* 24px */
+  --sys-icon-size-xl: 2rem; /* 32px */
+
+  /* ==========================================
+     DEFCON URGENCY COLOR TOKENS
+     ========================================== */
+  --sys-color-defcon-meltdown: #ef4444; /* Red-500 — immediate danger */
+  --sys-color-defcon-critical: #f97316; /* Orange-500 — urgent attention */
+  --sys-color-defcon-elevated: #eab308; /* Yellow-500 — heightened alert */
+  --sys-color-defcon-normal: #3b82f6; /* Blue-500 — standard priority */
+  --sys-color-defcon-calm: #22c55e; /* Green-500 — low pressure */
+
+  --sys-color-defcon-meltdown-bg: rgba(239, 68, 68, 0.08);
+  --sys-color-defcon-critical-bg: rgba(249, 115, 22, 0.08);
+  --sys-color-defcon-elevated-bg: rgba(234, 179, 8, 0.08);
+  --sys-color-defcon-normal-bg: rgba(59, 130, 246, 0.06);
+  --sys-color-defcon-calm-bg: rgba(34, 197, 94, 0.06);
 }
 
 /* High Contrast Theme Override */
 .theme-high-contrast {
   --sys-color-bg-primary: #000000;
   --sys-color-bg-secondary: #000000;
-  --sys-color-border-muted: #FFFFFF;
-  --sys-color-text-primary: #FFFFFF;
-  --sys-color-text-muted: #D1D5DB;
-  --sys-color-accent-amber: #FCD34D;
-  --sys-color-accent-emerald: #34D399;
-  --sys-color-accent-blue: #60A5FA;
+  --sys-color-border-muted: #ffffff;
+  --sys-color-text-primary: #ffffff;
+  --sys-color-text-muted: #d1d5db;
+  --sys-color-accent-amber: #fcd34d;
+  --sys-color-accent-emerald: #34d399;
+  --sys-color-accent-blue: #60a5fa;
   --sys-shadow-sm: none;
   --sys-shadow-md: none;
   --sys-shadow-lg: none;
@@ -155,17 +173,78 @@
 
 /* Light Theme Override (Readiness) */
 .theme-light {
-  --sys-color-bg-primary: #F9FAFB;
-  --sys-color-bg-secondary: #FFFFFF;
-  --sys-color-border-muted: #E5E7EB;
+  --sys-color-bg-primary: #f9fafb;
+  --sys-color-bg-secondary: #ffffff;
+  --sys-color-border-muted: #e5e7eb;
   --sys-color-text-primary: #111827;
-  --sys-color-text-muted: #6B7280;
-  --sys-color-accent-amber: #D97706;
+  --sys-color-text-muted: #6b7280;
+  --sys-color-accent-amber: #d97706;
   --sys-color-accent-emerald: #059669;
-  --sys-color-accent-blue: #2563EB;
+  --sys-color-accent-blue: #2563eb;
   --sys-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --sys-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --sys-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Auto Light Theme — activates when OS is in light mode */
+@media (prefers-color-scheme: light) {
+  :root:not(.theme-dark):not(.theme-high-contrast) {
+    --sys-color-bg-primary: #f9fafb;
+    --sys-color-bg-secondary: #ffffff;
+    --sys-color-border-muted: #e5e7eb;
+    --sys-color-text-primary: #111827;
+    --sys-color-text-muted: #6b7280;
+    --sys-color-accent-amber: #d97706;
+    --sys-color-accent-emerald: #059669;
+    --sys-color-accent-blue: #2563eb;
+    --sys-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --sys-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --sys-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+}
+
+/* ==========================================
+   PAGE TRANSITION UTILITIES
+   ========================================== */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up var(--sys-duration-soothing) var(--sys-ease-entrance) both;
+}
+
+.animate-fade-in {
+  animation: fade-in var(--sys-duration-standard) var(--sys-ease-entrance) both;
+}
+
+.stagger-1 {
+  animation-delay: 50ms;
+}
+.stagger-2 {
+  animation-delay: 100ms;
+}
+.stagger-3 {
+  animation-delay: 150ms;
+}
+.stagger-4 {
+  animation-delay: 200ms;
 }
 
 /* ==========================================
@@ -199,13 +278,27 @@
   --ease-snap: var(--sys-ease-snap);
   --ease-pulse: var(--sys-ease-pulse);
 
-  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  --animate-pulse-slow: pulse var(--sys-duration-slowest) var(--sys-ease-pulse) infinite;
+
+  --color-defcon-meltdown: var(--sys-color-defcon-meltdown);
+  --color-defcon-critical: var(--sys-color-defcon-critical);
+  --color-defcon-elevated: var(--sys-color-defcon-elevated);
+  --color-defcon-normal: var(--sys-color-defcon-normal);
+  --color-defcon-calm: var(--sys-color-defcon-calm);
+
+  --color-defcon-meltdown-bg: var(--sys-color-defcon-meltdown-bg);
+  --color-defcon-critical-bg: var(--sys-color-defcon-critical-bg);
+  --color-defcon-elevated-bg: var(--sys-color-defcon-elevated-bg);
+  --color-defcon-normal-bg: var(--sys-color-defcon-normal-bg);
+  --color-defcon-calm-bg: var(--sys-color-defcon-calm-bg);
 }
 
 /* ==========================================
    CSS RESET, NORMALIZE & BOX SIZING
    ========================================== */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -261,7 +354,10 @@ body {
 /* ==========================================
    ACCESSIBILITY & FOCUS RING DEFAULTS
    ========================================== */
-input:focus, select:focus, textarea:focus, button:focus {
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
   outline: none;
 }
 
@@ -274,7 +370,9 @@ input:focus, select:focus, textarea:focus, button:focus {
    REDUCED MOTION SUPPORT
    ========================================== */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-delay: -1ms !important;
     animation-duration: 1ms !important;
     animation-iteration-count: 1 !important;
@@ -283,4 +381,129 @@ input:focus, select:focus, textarea:focus, button:focus {
     transition-duration: 0s !important;
     transition-delay: 0s !important;
   }
+}
+
+/* ==========================================
+   DEFCON URGENCY ANIMATIONS
+   ========================================== */
+@keyframes pulse-meltdown {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 16px 4px rgba(239, 68, 68, 0.3);
+  }
+}
+
+@keyframes pulse-critical {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 12px 3px rgba(249, 115, 22, 0.2);
+  }
+}
+
+@keyframes shake-urgent {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-1px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(1px);
+  }
+}
+
+@keyframes countdown-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes glow-border {
+  0%,
+  100% {
+    border-color: var(--sys-color-defcon-meltdown);
+  }
+  50% {
+    border-color: rgba(239, 68, 68, 0.4);
+  }
+}
+
+/* DEFCON Card Utility Classes */
+.defcon-meltdown {
+  border-color: var(--sys-color-defcon-meltdown) !important;
+  background-color: var(--sys-color-defcon-meltdown-bg) !important;
+  animation: pulse-meltdown var(--sys-duration-slow) var(--sys-ease-pulse) infinite;
+}
+
+.defcon-critical {
+  border-color: var(--sys-color-defcon-critical) !important;
+  background-color: var(--sys-color-defcon-critical-bg) !important;
+  animation: pulse-critical var(--sys-duration-slower) var(--sys-ease-pulse) infinite;
+}
+
+.defcon-elevated {
+  border-color: var(--sys-color-defcon-elevated) !important;
+  background-color: var(--sys-color-defcon-elevated-bg) !important;
+}
+
+.defcon-normal {
+  border-color: var(--sys-color-defcon-normal) !important;
+  background-color: var(--sys-color-defcon-normal-bg) !important;
+}
+
+.defcon-calm {
+  border-color: var(--sys-color-defcon-calm) !important;
+  background-color: var(--sys-color-defcon-calm-bg) !important;
+}
+
+/* FAB (Floating Action Button) */
+.fab-container {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: var(--sys-z-sticky);
+}
+
+.fab-button {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--sys-radius-full);
+  background: linear-gradient(135deg, var(--sys-color-accent-amber), #e67e22);
+  color: #000;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--sys-shadow-lg);
+  transition:
+    transform var(--sys-duration-fast) var(--sys-ease-snap),
+    box-shadow var(--sys-duration-fast) var(--sys-ease-snap);
+}
+
+.fab-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+}
+
+.fab-button:active {
+  transform: scale(0.95);
 }

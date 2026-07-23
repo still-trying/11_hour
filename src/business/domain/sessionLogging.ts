@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Session Telemetry and Logging
- * 
+ *
  * Part of Slice 1.3: Session Platform.
  * Provides a clean, standardized structural log interface that automatically prefixes
  * platform namespaces and tracks trace correlations.
@@ -34,7 +34,7 @@ export class SessionLogging {
     if (error instanceof SessionException) {
       console.error(
         `${this.PREFIX} Error: ${message} | [Exception Code: ${error.code}] | [Correlation: ${error.correlationId}] | Message: ${error.message}`,
-        error.originalError || ''
+        error.originalError || '',
       );
     } else if (error instanceof Error) {
       console.error(`${this.PREFIX} Error: ${message} | [Error Message: ${error.message}]`, error);
@@ -48,7 +48,7 @@ export class SessionLogging {
    */
   public static metric(operation: string, durationMs: number, success: boolean): void {
     console.log(
-      `${this.PREFIX} Metric: Operation "${operation}" took ${durationMs.toFixed(1)}ms | Status: ${success ? 'SUCCESS' : 'FAILED'}`
+      `${this.PREFIX} Metric: Operation "${operation}" took ${durationMs.toFixed(1)}ms | Status: ${success ? 'SUCCESS' : 'FAILED'}`,
     );
   }
 }

@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
 import { LogIn, ArrowLeft, Mail, Lock, ShieldAlert } from 'lucide-react';
 import { AuthFormShell } from './AuthFormShell';
-import { GoogleButton } from './SharedAuthComponents';
+import { GoogleButton, FacebookButton } from './SharedAuthComponents';
 
 interface SignInScreenProps {
   onNavigate: (mode: 'welcome' | 'signup' | 'forgot') => void;
@@ -14,7 +14,7 @@ interface SignInScreenProps {
 
 export function SignInScreen({ onNavigate }: SignInScreenProps): React.JSX.Element {
   const navigate = useNavigate();
-  const { signIn, isLoading, error: storeError, clearError } = useAuth();
+  const { signIn, signInWithGoogle, signInWithFacebook, isLoading, error: storeError, clearError } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -41,7 +41,7 @@ export function SignInScreen({ onNavigate }: SignInScreenProps): React.JSX.Eleme
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearError();
-    
+
     if (!validate()) return;
 
     const success = await signIn(email, password);
@@ -53,14 +53,27 @@ export function SignInScreen({ onNavigate }: SignInScreenProps): React.JSX.Eleme
 
   const handleGoogleSignIn = async () => {
     clearError();
-    // Simulate google oauth transition
-    const mockAuthStore = (await import('@/stores/authStore')).useAuthStore.getState();
-    mockAuthStore.signUp('google.user@example.com', 'secure_oauth_pass', 'Google User');
-    navigate('/dashboard');
+    const success = await signInWithGoogle();
+    if (success) {
+      console.info('🔄 [SignInScreen] Google OAuth succeeded. Redirecting to dashboard.');
+      navigate('/dashboard');
+    }
+  };
+
+  const handleFacebookSignIn = async () => {
+    clearError();
+    const success = await signInWithFacebook();
+    if (success) {
+      console.info('🔄 [SignInScreen] Facebook OAuth succeeded. Redirecting to dashboard.');
+      navigate('/dashboard');
+    }
   };
 
   return (
-    <Card className="flex flex-col gap-sys-lg bg-bg-secondary border border-border-muted" padding="lg">
+    <Card
+      className="flex flex-col gap-sys-lg bg-bg-secondary border border-border-muted"
+      padding="lg"
+    >
       {/* Top action header */}
       <div className="flex items-center justify-between">
         <button
@@ -129,7 +142,8 @@ export function SignInScreen({ onNavigate }: SignInScreenProps): React.JSX.Eleme
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
-                if (localErrors.password) setLocalErrors((prev) => ({ ...prev, password: undefined }));
+                if (localErrors.password)
+                  setLocalErrors((prev) => ({ ...prev, password: undefined }));
               }}
               error={localErrors.password}
               disabled={isLoading}
@@ -172,6 +186,7 @@ export function SignInScreen({ onNavigate }: SignInScreenProps): React.JSX.Eleme
       </div>
 
       <GoogleButton onClick={handleGoogleSignIn} disabled={isLoading} />
+      <FacebookButton onClick={handleFacebookSignIn} disabled={isLoading} />
 
       {/* Onboarding swap */}
       <div className="text-center mt-1">

@@ -13,20 +13,20 @@
 export const sys = {
   color: {
     bg: {
-      primary: '#0B0C0E',   // Deep Obsidian Black
+      primary: '#0B0C0E', // Deep Obsidian Black
       secondary: '#131518', // Soothing Charcoal Card
     },
     border: {
-      muted: '#1F2226',     // Low-contrast Divider
+      muted: '#1F2226', // Low-contrast Divider
     },
     text: {
-      primary: '#F3F4F6',   // High-contrast Warm White
-      muted: '#8E96A0',     // Soothing Slate Gray
+      primary: '#F3F4F6', // High-contrast Warm White
+      muted: '#8E96A0', // Soothing Slate Gray
     },
     accent: {
-      amber: '#F59E0B',     // Adrenaline-fueling Focus Yellow
-      emerald: '#10B981',   // Completed State Green
-      blue: '#3B82F6',      // Focused Emergency Blue
+      amber: '#F59E0B', // Adrenaline-fueling Focus Yellow
+      emerald: '#10B981', // Completed State Green
+      blue: '#3B82F6', // Focused Emergency Blue
     },
   },
 
@@ -37,12 +37,12 @@ export const sys = {
       mono: '"JetBrains Mono", SFMono-Regular, Consolas, monospace',
     },
     size: {
-      xs: '0.75rem',    // 12px
-      sm: '0.875rem',   // 14px
-      base: '1rem',     // 16px
-      lg: '1.125rem',   // 18px
-      xl: '1.25rem',    // 20px
-      xxl: '1.5rem',    // 24px (2xl)
+      xs: '0.75rem', // 12px
+      sm: '0.875rem', // 14px
+      base: '1rem', // 16px
+      lg: '1.125rem', // 18px
+      xl: '1.25rem', // 20px
+      xxl: '1.5rem', // 24px (2xl)
       xxxl: '1.875rem', // 30px (3xl)
       xxxxl: '2.25rem', // 36px (4xl)
     },
@@ -70,17 +70,17 @@ export const sys = {
   },
 
   space: {
-    xs: '0.25rem',  // 4px
-    sm: '0.5rem',   // 8px
-    md: '1rem',     // 16px
-    lg: '1.5rem',   // 24px
-    xl: '2.5rem',   // 40px
+    xs: '0.25rem', // 4px
+    sm: '0.5rem', // 8px
+    md: '1rem', // 16px
+    lg: '1.5rem', // 24px
+    xl: '2.5rem', // 40px
   },
 
   radius: {
-    sm: '4px',      // Checkboxes, micro badges
-    md: '8px',      // Inputs, buttons
-    lg: '12px',     // Primary cards, focus boards
+    sm: '4px', // Checkboxes, micro badges
+    md: '8px', // Inputs, buttons
+    lg: '12px', // Primary cards, focus boards
     full: '9999px', // Circle avatars, fully rounded capsules
   },
 
@@ -110,9 +110,9 @@ export const sys = {
 
   motion: {
     duration: {
-      fast: 0.15,      // 150ms (seconds for Framer Motion)
-      standard: 0.3,   // 300ms
-      soothing: 0.5,   // 500ms
+      fast: 0.15, // 150ms (seconds for Framer Motion)
+      standard: 0.3, // 300ms
+      soothing: 0.5, // 500ms
     },
     durationMs: {
       fast: 150,
@@ -122,8 +122,8 @@ export const sys = {
     ease: {
       // Numerical values for Framer Motion transitions
       entrance: [0.16, 1, 0.3, 1], // Soothing decelerated sweep
-      snap: [0.25, 1, 0.5, 1],     // Snappy, responsive trigger
-      pulse: [0.4, 0, 0.2, 1],     // Soft, repeating breathing wave
+      snap: [0.25, 1, 0.5, 1], // Snappy, responsive trigger
+      pulse: [0.4, 0, 0.2, 1], // Soft, repeating breathing wave
     },
   },
 
@@ -155,11 +155,11 @@ export const sys = {
 
   icon: {
     size: {
-      xs: '0.75rem',  // 12px
-      sm: '1rem',     // 16px
-      md: '1.25rem',  // 20px
-      lg: '1.5rem',   // 24px
-      xl: '2rem',     // 32px
+      xs: '0.75rem', // 12px
+      sm: '1rem', // 16px
+      md: '1.25rem', // 20px
+      lg: '1.5rem', // 24px
+      xl: '2rem', // 32px
     },
   },
 } as const;

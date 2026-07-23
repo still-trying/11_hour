@@ -2,8 +2,8 @@
  * 11_HOUR - State Platform Authentication Store
  *
  * Coordinates user session tracking, credentials presentation states,
- * and profile metadata. Implements highly responsive mock flows for
- * visual validation and loading transitions (Slice 1.1 UI Foundation).
+ * and profile metadata. Coordinates user session tracking, credentials
+ * presentation states, and profile lifecycle events.
  */
 
 import { createStateStore } from './platform/factory';
@@ -12,6 +12,12 @@ import { UserProfile } from '@/types';
 import { identityServiceInstance } from '@/runtime/identityRegistry';
 import { profileServiceInstance } from '@/runtime/profileRegistry';
 import { ProfileUtils } from '@/business/domain/profileUtils';
+
+/**
+ * Module-level reference to the profile change listener unsubscribe function.
+ * Replaces the previous (window as any) global which caused memory leaks and type safety issues.
+ */
+let _unsubscribeProfileListener: (() => void) | null = null;
 
 export interface AuthState {
   user: UserProfile | null;
@@ -28,9 +34,10 @@ export interface AuthActions {
   signOut: () => Promise<void>;
   sendForgotPasswordReset: (email: string) => Promise<boolean>;
   signInWithGoogle: () => Promise<boolean>;
+  signInWithFacebook: () => Promise<boolean>;
   clearError: () => void;
   clearResetSuccess: () => void;
-  updateProfile: (data: any) => Promise<boolean>;
+  updateProfile: (data: Record<string, unknown>) => Promise<boolean>;
 }
 
 const initialState: AuthState = {
@@ -56,7 +63,7 @@ export const useAuthStore = createStateStore<AuthState, AuthActions>({
             user.id,
             user.email,
             user.displayName || null,
-            user.photoURL || null
+            user.photoURL || null,
           );
 
           const legacyProfile = ProfileUtils.toLegacyProfile(domainProfile);
@@ -68,23 +75,25 @@ export const useAuthStore = createStateStore<AuthState, AuthActions>({
             isLoading: false,
           });
 
-          // Establish a real-time Firestore synchronization listener
-          if ((window as any)._unsubscribeProfileListener) {
+          // Establish a real-time Supabase profile change listener
+          if (_unsubscribeProfileListener) {
             try {
-              (window as any)._unsubscribeProfileListener();
+              _unsubscribeProfileListener();
             } catch {
               console.debug('Active listener cleanup deferred.');
             }
           }
 
-          const unsubscribe = profileServiceInstance.onProfileChanged(user.id, (updatedDomain) => {
-            if (updatedDomain) {
-              const updatedLegacy = ProfileUtils.toLegacyProfile(updatedDomain);
-              set({ user: updatedLegacy });
-            }
-          });
-
-          (window as any)._unsubscribeProfileListener = unsubscribe;
+          _unsubscribeProfileListener = profileServiceInstance.onProfileChanged(
+            user.id,
+            (updatedDomain) => {
+              if (updatedDomain) {
+                const updatedLegacy = ProfileUtils.toLegacyProfile(updatedDomain);
+                set({ user: updatedLegacy });
+              }
+            },
+          );
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
           console.error('⚠️ [AuthStore] Profile initialization failed:', error);
           set({
@@ -96,13 +105,13 @@ export const useAuthStore = createStateStore<AuthState, AuthActions>({
         }
       } else {
         // Clear snapshot listeners
-        if ((window as any)._unsubscribeProfileListener) {
+        if (_unsubscribeProfileListener) {
           try {
-            (window as any)._unsubscribeProfileListener();
+            _unsubscribeProfileListener();
           } catch {
             console.debug('Unsubscribe action completed with warning.');
           }
-          delete (window as any)._unsubscribeProfileListener;
+          _unsubscribeProfileListener = null;
         }
 
         set({
@@ -120,6 +129,7 @@ export const useAuthStore = createStateStore<AuthState, AuthActions>({
         try {
           await identityServiceInstance.signIn(email, password);
           return true;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
           set({ error: err.message, isLoading: false });
           return false;
@@ -133,6 +143,7 @@ export const useAuthStore = createStateStore<AuthState, AuthActions>({
         try {
           await identityServiceInstance.signUp(email, password, displayName);
           return true;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
           set({ error: err.message, isLoading: false });
           return false;
@@ -145,6 +156,7 @@ export const useAuthStore = createStateStore<AuthState, AuthActions>({
         set({ isLoading: true, error: null });
         try {
           await identityServiceInstance.signOut();
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
           set({ error: err.message, isLoading: false });
         } finally {
@@ -158,6 +170,7 @@ export const useAuthStore = createStateStore<AuthState, AuthActions>({
           await identityServiceInstance.sendPasswordReset(email);
           set({ resetSuccess: true, isLoading: false });
           return true;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
           set({ error: err.message, resetSuccess: false, isLoading: false });
           return false;
@@ -171,6 +184,21 @@ export const useAuthStore = createStateStore<AuthState, AuthActions>({
         try {
           await identityServiceInstance.signInWithGoogle();
           return true;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (err: any) {
+          set({ error: err.message, isLoading: false });
+          return false;
+        } finally {
+          set({ isLoading: false });
+        }
+      },
+
+      signInWithFacebook: async () => {
+        set({ isLoading: true, error: null });
+        try {
+          await identityServiceInstance.signInWithFacebook();
+          return true;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
           set({ error: err.message, isLoading: false });
           return false;
@@ -187,7 +215,7 @@ export const useAuthStore = createStateStore<AuthState, AuthActions>({
         set({ resetSuccess: false });
       },
 
-      updateProfile: async (data: any) => {
+      updateProfile: async (data: Record<string, unknown>) => {
         const currentUser = get().user;
         if (!currentUser) {
           set({ error: 'User is not authenticated' });
@@ -200,6 +228,7 @@ export const useAuthStore = createStateStore<AuthState, AuthActions>({
           const legacyProfile = ProfileUtils.toLegacyProfile(updatedDomain);
           set({ user: legacyProfile, isLoading: false });
           return true;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
           set({ error: err.message, isLoading: false });
           return false;

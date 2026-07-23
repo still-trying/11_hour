@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { z } from 'zod';
 import { StoreName, StorageType } from './constants';
 
@@ -44,9 +46,9 @@ export interface StoreConfig<S, A> {
   actions: (
     set: (
       partial: S | Partial<S> | ((state: S & BaseState & BaseActions) => S | Partial<S> | void),
-      replace?: boolean
+      replace?: boolean,
     ) => void,
-    get: () => S & BaseState & BaseActions
+    get: () => S & BaseState & BaseActions,
   ) => A;
   storageType?: StorageType;
   version?: number;

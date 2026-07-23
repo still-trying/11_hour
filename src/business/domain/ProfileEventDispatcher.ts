@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Profile Platform Event Dispatcher
- * 
+ *
  * Part of Slice 1.5: User Identity Profile Platform.
  * Dispatches highly isolated, pub/sub telemetry notifications for visual observers and sync workers.
  */
@@ -36,7 +36,9 @@ export class ProfileEventDispatcher {
    * Publishes a profile updated event.
    */
   public dispatchUpdated(uid: string, fieldsChanged: string[]): void {
-    ProfileLogging.info(`Broadcasting PROFILE_UPDATED for user: ${uid}. Fields: ${fieldsChanged.join(', ')}`);
+    ProfileLogging.info(
+      `Broadcasting PROFILE_UPDATED for user: ${uid}. Fields: ${fieldsChanged.join(', ')}`,
+    );
     AppEventBus.publish('PROFILE_UPDATED', {
       uid,
       fieldsChanged,
@@ -82,7 +84,9 @@ export class ProfileEventDispatcher {
    * Publishes a profile migration event.
    */
   public dispatchMigrated(uid: string, oldVersion: number, newVersion: number): void {
-    ProfileLogging.info(`Broadcasting PROFILE_MIGRATED for user: ${uid} (v${oldVersion} -> v${newVersion})`);
+    ProfileLogging.info(
+      `Broadcasting PROFILE_MIGRATED for user: ${uid} (v${oldVersion} -> v${newVersion})`,
+    );
     AppEventBus.publish('PROFILE_MIGRATED', {
       uid,
       oldVersion,
@@ -106,7 +110,9 @@ export class ProfileEventDispatcher {
    * Publishes a profile error event.
    */
   public dispatchError(error: ProfileException): void {
-    ProfileLogging.error(`Broadcasting PROFILE_ERROR | Code: ${error.code} | Msg: ${error.message}`);
+    ProfileLogging.error(
+      `Broadcasting PROFILE_ERROR | Code: ${error.code} | Msg: ${error.message}`,
+    );
     AppEventBus.publish('PROFILE_ERROR', {
       code: error.code,
       message: error.message,

@@ -112,56 +112,56 @@ export function syncThemeClass(resolvedTheme: ResolvedTheme): void {
 export const SEMANTIC_THEME_MAPPING: Record<ResolvedTheme, ColorTokens> = {
   dark: {
     bg: {
-      primary: '#0B0C0E',   // Deep Obsidian Black
+      primary: '#0B0C0E', // Deep Obsidian Black
       secondary: '#131518', // Soothing Charcoal Card
     },
     border: {
-      muted: '#1F2226',     // Low-contrast Divider
+      muted: '#1F2226', // Low-contrast Divider
     },
     text: {
-      primary: '#F3F4F6',   // High-contrast Warm White
-      muted: '#8E96A0',     // Soothing Slate Gray
+      primary: '#F3F4F6', // High-contrast Warm White
+      muted: '#8E96A0', // Soothing Slate Gray
     },
     accent: {
-      amber: '#F59E0B',     // Adrenaline-fueling Focus Yellow
-      emerald: '#10B981',   // Completed State Green
-      blue: '#3B82F6',      // Focused Emergency Blue
+      amber: '#F59E0B', // Adrenaline-fueling Focus Yellow
+      emerald: '#10B981', // Completed State Green
+      blue: '#3B82F6', // Focused Emergency Blue
     },
   },
   light: {
     bg: {
-      primary: '#F9FAFB',   // Clean light grey
+      primary: '#F9FAFB', // Clean light grey
       secondary: '#FFFFFF', // High-contrast clean white card
     },
     border: {
-      muted: '#E5E7EB',     // Soothing grey divider
+      muted: '#E5E7EB', // Soothing grey divider
     },
     text: {
-      primary: '#111827',   // Highly-visible deep grey text
-      muted: '#6B7280',     // Soft slate grey text
+      primary: '#111827', // Highly-visible deep grey text
+      muted: '#6B7280', // Soft slate grey text
     },
     accent: {
-      amber: '#D97706',     // Accessible dark amber focus
-      emerald: '#059669',   // Accessible dark emerald completion
-      blue: '#2563EB',      // Accessible deep blue emergency
+      amber: '#D97706', // Accessible dark amber focus
+      emerald: '#059669', // Accessible dark emerald completion
+      blue: '#2563EB', // Accessible deep blue emergency
     },
   },
   'high-contrast': {
     bg: {
-      primary: '#000000',   // Absolute Black backdrop
+      primary: '#000000', // Absolute Black backdrop
       secondary: '#000000', // Absolute Black card
     },
     border: {
-      muted: '#FFFFFF',     // Pure White borders
+      muted: '#FFFFFF', // Pure White borders
     },
     text: {
-      primary: '#FFFFFF',   // Pure White text
-      muted: '#D1D5DB',     // Light grey secondary text
+      primary: '#FFFFFF', // Pure White text
+      muted: '#D1D5DB', // Light grey secondary text
     },
     accent: {
-      amber: '#FCD34D',     // Ultra-vibrant highlight yellow
-      emerald: '#34D399',   // High-luminance emerald green
-      blue: '#60A5FA',      // High-luminance sky blue
+      amber: '#FCD34D', // Ultra-vibrant highlight yellow
+      emerald: '#34D399', // High-luminance emerald green
+      blue: '#60A5FA', // High-luminance sky blue
     },
   },
 };
@@ -170,9 +170,10 @@ export const SEMANTIC_THEME_MAPPING: Record<ResolvedTheme, ColorTokens> = {
  * Programmatically retrieves semantic colors based on resolved theme.
  * Enforces strict typing.
  */
-export function getSemanticColor<
-  C extends keyof ColorTokens,
-  V extends keyof ColorTokens[C]
->(resolvedTheme: ResolvedTheme, category: C, variant: V): string {
+export function getSemanticColor<C extends keyof ColorTokens, V extends keyof ColorTokens[C]>(
+  resolvedTheme: ResolvedTheme,
+  category: C,
+  variant: V,
+): string {
   return SEMANTIC_THEME_MAPPING[resolvedTheme][category][variant] as string;
 }

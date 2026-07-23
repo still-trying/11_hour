@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Profile Platform Lifecycle Manager
- * 
+ *
  * Part of Slice 1.5: User Identity Profile Platform.
  * Coordinates user-specific onboarding completion, account deletion, and custom user settings updates.
  */
@@ -24,12 +24,15 @@ export class ProfileLifecycleManager {
   /**
    * Updates specific settings inside the user profile, handling background synchronization.
    */
-  public async updateProfile(uid: string, changes: Partial<IDomainUserProfile>): Promise<IDomainUserProfile> {
+  public async updateProfile(
+    uid: string,
+    changes: Partial<IDomainUserProfile>,
+  ): Promise<IDomainUserProfile> {
     try {
       ProfileLogging.info(`Initiating profile update request for user: ${uid}`);
-      
+
       const updated = await this.syncManager.scheduleSync(uid, changes);
-      
+
       // Determine what high-level areas changed for audit trails
       const changedKeys = Object.keys(changes);
       profileEventDispatcherInstance.dispatchUpdated(uid, changedKeys);
@@ -104,7 +107,8 @@ export class ProfileLifecycleManager {
   public async exportUserData(uid: string): Promise<string> {
     try {
       ProfileLogging.info(`Exporting backup database snapshot for user: ${uid}`);
-      const profile = this.syncManager.getLocalCache(uid) || await this.repository.getProfile(uid);
+      const profile =
+        this.syncManager.getLocalCache(uid) || (await this.repository.getProfile(uid));
       if (!profile) {
         throw new Error('User profile does not exist.');
       }

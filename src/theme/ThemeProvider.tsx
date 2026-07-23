@@ -23,7 +23,10 @@ export interface ThemeProviderProps {
   config?: Partial<ThemeConfig>;
 }
 
-export function ThemeProvider({ children, config: customConfig }: ThemeProviderProps): React.JSX.Element {
+export function ThemeProvider({
+  children,
+  config: customConfig,
+}: ThemeProviderProps): React.JSX.Element {
   // Merge customized configurations with system defaults
   const config = useMemo<ThemeConfig>(() => {
     return {
@@ -53,25 +56,25 @@ export function ThemeProvider({ children, config: customConfig }: ThemeProviderP
     return resolveTheme(themeMode);
   }, [themeMode, systemTheme]);
 
-  // Safe theme updater coordinating both react state and local persistence
-  const setThemeMode = useCallback(
-    (newMode: ThemeMode) => {
-      setThemeModeState(newMode);
-      setStoredThemeMode(config.storageKey, newMode);
-    },
-    [config.storageKey]
-  );
+  // Persist themeMode to localStorage whenever it changes
+  useEffect(() => {
+    setStoredThemeMode(config.storageKey, themeMode);
+  }, [config.storageKey, themeMode]);
+
+  // Safe theme updater — persistence is handled by the useEffect above
+  const setThemeMode = useCallback((newMode: ThemeMode) => {
+    setThemeModeState(newMode);
+  }, []);
 
   // Snappy theme cyclist: Dark -> Light -> High Contrast -> System
+  // Uses functional updater (no side effects inside) — persistence is handled by useEffect
   const toggleTheme = useCallback(() => {
     setThemeModeState((prev) => {
       const currentIndex = THEME_CYCLE_ORDER.indexOf(prev);
       const nextIndex = (currentIndex + 1) % THEME_CYCLE_ORDER.length;
-      const nextMode = THEME_CYCLE_ORDER[nextIndex];
-      setStoredThemeMode(config.storageKey, nextMode);
-      return nextMode;
+      return THEME_CYCLE_ORDER[nextIndex];
     });
-  }, [config.storageKey]);
+  }, []);
 
   // Synchronize CSS class lists with any resolved theme mutations
   useEffect(() => {
@@ -142,9 +145,5 @@ export function ThemeProvider({ children, config: customConfig }: ThemeProviderP
     };
   }, [themeMode, resolvedTheme, reducedMotion, setThemeMode, toggleTheme]);
 
-  return (
-    <ThemeContext.Provider value={contextValue}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>;
 }

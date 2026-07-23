@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Public/Guest Route Guard
- * 
+ *
  * Part of Slice 1.4: Authorization Platform & Route Access Framework.
  * Secures guest-only pages (such as `/auth`) by automatically redirecting
  * already-authenticated users to safety (the `/dashboard` workspace).
@@ -27,7 +27,9 @@ export function PublicRoute({ children }: PublicRouteProps): React.JSX.Element {
     return (
       <div className="flex h-screen w-screen flex-col items-center justify-center bg-zinc-950 text-zinc-400">
         <div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-700 border-t-zinc-400" />
-        <p className="mt-4 text-xs font-mono tracking-widest text-zinc-500 uppercase">Synchronizing Credentials...</p>
+        <p className="mt-4 text-xs font-mono tracking-widest text-zinc-500 uppercase">
+          Synchronizing Credentials...
+        </p>
       </div>
     );
   }
@@ -39,8 +41,10 @@ export function PublicRoute({ children }: PublicRouteProps): React.JSX.Element {
     const params = new URLSearchParams(location.search);
     const redirectTarget = params.get(REDIRECT_QUERY_PARAM);
     const destination = redirectTarget ? decodeURIComponent(redirectTarget) : ROUTES.DASHBOARD;
-    
-    console.info(`🛡️ [PublicRoute] Logged-in user tried to hit Guest page. Redirecting to: ${destination}`);
+
+    console.info(
+      `🛡️ [PublicRoute] Logged-in user tried to hit Guest page. Redirecting to: ${destination}`,
+    );
     return <Navigate to={destination} replace />;
   }
 

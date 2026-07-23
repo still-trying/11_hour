@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Authorization Platform Constants
- * 
+ *
  * Part of Slice 1.4: Authorization Platform & Route Access Framework.
  * Declares system role mappings, initial feature flags, default redirect configurations,
  * and standard route access definitions.

@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Session Type Definitions
- * 
+ *
  * Part of Slice 1.3: Session Platform.
  * Defines session-related states, events, payloads, interfaces, and exception classes
  * to decouple the presentation and application layers from specific infrastructure SDKs.
@@ -83,7 +83,7 @@ export class SessionException extends Error {
     code: SessionErrorCode,
     message: string,
     correlationId: string = Math.random().toString(36).substring(2, 11),
-    originalError?: unknown
+    originalError?: unknown,
   ) {
     super(message);
     this.name = 'SessionException';
@@ -104,7 +104,10 @@ export class SessionException extends Error {
       code: this.code,
       message: this.message,
       correlationId: this.correlationId,
-      originalMessage: this.originalError instanceof Error ? this.originalError.message : String(this.originalError || ''),
+      originalMessage:
+        this.originalError instanceof Error
+          ? this.originalError.message
+          : String(this.originalError || ''),
     };
   }
 }
@@ -115,7 +118,12 @@ export class SessionException extends Error {
 export interface SessionEventPayloads {
   [SessionEvent.SESSION_STARTED]: { sessionId: string; userId: string; timestamp: string };
   [SessionEvent.SESSION_HYDRATED]: { sessionId: string; userId: string; timestamp: string };
-  [SessionEvent.SESSION_RECOVERED]: { sessionId: string; userId: string; timestamp: string; previousState: SessionState };
+  [SessionEvent.SESSION_RECOVERED]: {
+    sessionId: string;
+    userId: string;
+    timestamp: string;
+    previousState: SessionState;
+  };
   [SessionEvent.SESSION_EXPIRED]: { sessionId: string; userId: string; timestamp: string };
   [SessionEvent.SESSION_SIGNED_OUT]: { sessionId: string; timestamp: string };
   [SessionEvent.SESSION_ERROR]: { error: SessionException; timestamp: string };

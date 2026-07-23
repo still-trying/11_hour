@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Session Manager Orchestrator
- * 
+ *
  * Part of Slice 1.3: Session Platform.
  * Acts as the centralized Dependency Injection entry point, wiring together the repository,
  * services, and state lifecycle manager to provide a unified control panel.
@@ -8,7 +8,7 @@
 
 import { SessionService } from './SessionService';
 import { SessionLifecycleManager } from './SessionLifecycleManager';
-import { firebaseSessionRepositoryInstance } from '@/firebase/repositories/FirebaseSessionRepository';
+import { supabaseSessionRepositoryInstance } from '@/lib/supabase/repositories/SupabaseSessionRepository';
 import { identityServiceInstance } from '@/runtime/identityRegistry';
 import { SessionState, ISession } from './sessionTypes';
 
@@ -18,8 +18,11 @@ class SessionManagerClass {
   private isStarted = false;
 
   constructor() {
-    this.sessionService = new SessionService(firebaseSessionRepositoryInstance);
-    this.lifecycleManager = new SessionLifecycleManager(this.sessionService, identityServiceInstance);
+    this.sessionService = new SessionService(supabaseSessionRepositoryInstance);
+    this.lifecycleManager = new SessionLifecycleManager(
+      this.sessionService,
+      identityServiceInstance,
+    );
   }
 
   /**

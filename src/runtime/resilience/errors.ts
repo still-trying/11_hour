@@ -9,7 +9,7 @@
 export enum FailureCategory {
   RUNTIME = 'RUNTIME',
   NETWORK = 'NETWORK',
-  FIREBASE = 'FIREBASE',
+  DATABASE = 'DATABASE',
   AI = 'AI',
   VALIDATION = 'VALIDATION',
   PERMISSION = 'PERMISSION',
@@ -17,10 +17,10 @@ export enum FailureCategory {
 }
 
 export enum ErrorSeverity {
-  LOW = 'LOW',         // Degradable, auto-healable, no UI interruption
-  MEDIUM = 'MEDIUM',   // Needs UI toast or user retry button
-  HIGH = 'HIGH',       // Requires partial fallback (e.g. static template)
-  FATAL = 'FATAL',     // Completely breaks the view, requires Global Fallback UI
+  LOW = 'LOW', // Degradable, auto-healable, no UI interruption
+  MEDIUM = 'MEDIUM', // Needs UI toast or user retry button
+  HIGH = 'HIGH', // Requires partial fallback (e.g. static template)
+  FATAL = 'FATAL', // Completely breaks the view, requires Global Fallback UI
 }
 
 export interface ErrorDetails {
@@ -29,14 +29,17 @@ export interface ErrorDetails {
   category: FailureCategory;
   severity: ErrorSeverity;
   originalError?: unknown;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
 }
 
 /**
  * Generates a unique pseudo-correlation ID for telemetry and diagnostic grouping.
  */
 export function generateCorrelationId(): string {
-  const segment = () => Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+  const segment = () =>
+    Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
   return `ERR-${segment()}-${segment()}-${segment()}`.toUpperCase();
 }
 
@@ -48,7 +51,7 @@ export class BaseResilienceError extends Error {
   public readonly timestamp: string;
   public readonly category: FailureCategory;
   public readonly severity: ErrorSeverity;
-  public readonly details?: Record<string, any>;
+  public readonly details?: Record<string, unknown>;
   public readonly originalError?: unknown;
 
   constructor(
@@ -56,7 +59,7 @@ export class BaseResilienceError extends Error {
     category: FailureCategory,
     severity: ErrorSeverity = ErrorSeverity.MEDIUM,
     originalError?: unknown,
-    details?: Record<string, any>
+    details?: Record<string, unknown>,
   ) {
     super(message);
     this.name = 'BaseResilienceError';
@@ -85,49 +88,49 @@ export class BaseResilienceError extends Error {
 }
 
 export class RuntimeError extends BaseResilienceError {
-  constructor(message: string, originalError?: unknown, details?: Record<string, any>) {
+  constructor(message: string, originalError?: unknown, details?: Record<string, unknown>) {
     super(message, FailureCategory.RUNTIME, ErrorSeverity.HIGH, originalError, details);
     this.name = 'RuntimeError';
   }
 }
 
 export class NetworkError extends BaseResilienceError {
-  constructor(message: string, originalError?: unknown, details?: Record<string, any>) {
+  constructor(message: string, originalError?: unknown, details?: Record<string, unknown>) {
     super(message, FailureCategory.NETWORK, ErrorSeverity.MEDIUM, originalError, details);
     this.name = 'NetworkError';
   }
 }
 
-export class FirebaseError extends BaseResilienceError {
-  constructor(message: string, originalError?: unknown, details?: Record<string, any>) {
-    super(message, FailureCategory.FIREBASE, ErrorSeverity.HIGH, originalError, details);
-    this.name = 'FirebaseError';
+export class DatabaseError extends BaseResilienceError {
+  constructor(message: string, originalError?: unknown, details?: Record<string, unknown>) {
+    super(message, FailureCategory.DATABASE, ErrorSeverity.HIGH, originalError, details);
+    this.name = 'DatabaseError';
   }
 }
 
 export class AIError extends BaseResilienceError {
-  constructor(message: string, originalError?: unknown, details?: Record<string, any>) {
+  constructor(message: string, originalError?: unknown, details?: Record<string, unknown>) {
     super(message, FailureCategory.AI, ErrorSeverity.HIGH, originalError, details);
     this.name = 'AIError';
   }
 }
 
 export class ValidationError extends BaseResilienceError {
-  constructor(message: string, originalError?: unknown, details?: Record<string, any>) {
+  constructor(message: string, originalError?: unknown, details?: Record<string, unknown>) {
     super(message, FailureCategory.VALIDATION, ErrorSeverity.LOW, originalError, details);
     this.name = 'ValidationError';
   }
 }
 
 export class PermissionError extends BaseResilienceError {
-  constructor(message: string, originalError?: unknown, details?: Record<string, any>) {
+  constructor(message: string, originalError?: unknown, details?: Record<string, unknown>) {
     super(message, FailureCategory.PERMISSION, ErrorSeverity.FATAL, originalError, details);
     this.name = 'PermissionError';
   }
 }
 
 export class UnknownError extends BaseResilienceError {
-  constructor(message: string, originalError?: unknown, details?: Record<string, any>) {
+  constructor(message: string, originalError?: unknown, details?: Record<string, unknown>) {
     super(message, FailureCategory.UNKNOWN, ErrorSeverity.FATAL, originalError, details);
     this.name = 'UnknownError';
   }
@@ -145,20 +148,19 @@ export function classifyError(error: unknown): BaseResilienceError {
   const errMessage = error instanceof Error ? error.message : String(error);
   const errName = error instanceof Error ? error.name : 'UnknownException';
 
-  // 1. Check for Firestore Error Info JSON pattern (re-thrown by handleFirestoreError)
-  if (typeof errMessage === 'string' && errMessage.includes('operationType') && errMessage.includes('authInfo')) {
+  // 1. Check for structured database error info (permission-denied patterns)
+  if (
+    typeof errMessage === 'string' &&
+    errMessage.includes('permission-denied') &&
+    errMessage.includes('operationType')
+  ) {
     try {
       const parsed = JSON.parse(errMessage);
-      const isPermission = parsed.error && (
-        parsed.error.includes('permission-denied') || 
-        parsed.error.includes('Permission denied') ||
-        parsed.error.toLowerCase().includes('permission')
+      return new PermissionError(
+        `Database access denied: ${parsed.error || errMessage}`,
+        error,
+        parsed,
       );
-      
-      if (isPermission) {
-        return new PermissionError(`Firebase Database access denied: ${parsed.error}`, error, parsed);
-      }
-      return new FirebaseError(`Firebase operation failed: ${parsed.error}`, error, parsed);
     } catch {
       // JSON parsing failed, fall back to standard checks
     }
@@ -188,14 +190,15 @@ export function classifyError(error: unknown): BaseResilienceError {
     return new NetworkError(`Network connection failure: ${errMessage}`, error);
   }
 
-  // 4. Check for Firebase Auth/Firestore SDK errors
+  // 4. Check for Supabase/Database SDK errors
   if (
     errMessage.includes('auth/') ||
-    errMessage.includes('firestore') ||
-    errMessage.includes('storage/') ||
-    errName.includes('FirebaseError')
+    errName.includes('AuthRetryableFetchError') ||
+    errName.includes('AuthSessionMissingError') ||
+    errName.includes('PostgrestError') ||
+    errMessage.toLowerCase().includes('supabase')
   ) {
-    return new FirebaseError(`Cloud infrastructure error: ${errMessage}`, error);
+    return new DatabaseError(`Database infrastructure error: ${errMessage}`, error);
   }
 
   // 5. Check for Zod / validation library structures

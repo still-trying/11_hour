@@ -1,13 +1,12 @@
 /**
  * 11_HOUR - Runtime Configuration Loader
  *
- * Implements Zod validation rules to merge environment variables
- * and Firebase metadata into a validated, immutable RuntimeConfig.
+ * Validates environment variables into a typed RuntimeConfig.
+ * Validates environment variables into a typed RuntimeConfig using Supabase as the data backend.
  */
 
 import { z } from 'zod';
 import { RuntimeConfig } from './types';
-import { buildFirebaseConfig } from '@/firebase/configBuilder';
 import { DEFAULT_RUNTIME_CONFIG, RUNTIME_VERSION } from './constants';
 
 const envSchema = z.enum(['development', 'production', 'test']);
@@ -17,14 +16,9 @@ const runtimeConfigSchema = z.object({
   version: z.string(),
   debug: z.boolean(),
   apiTimeoutMs: z.number().min(1000).max(60000),
-  firebase: z.object({
-    apiKey: z.string().min(1),
-    authDomain: z.string().min(1),
-    projectId: z.string().min(1),
-    storageBucket: z.string().min(1),
-    messagingSenderId: z.string().min(1),
-    appId: z.string().min(1),
-    firestoreDatabaseId: z.string().default('(default)'),
+  supabase: z.object({
+    url: z.string().min(1),
+    connected: z.boolean(),
   }),
   features: z.object({
     enableAnalytics: z.boolean(),
@@ -39,20 +33,29 @@ const runtimeConfigSchema = z.object({
  */
 export function loadRuntimeConfig(): RuntimeConfig {
   try {
-    const rawEnv = (import.meta.env.VITE_APP_ENV || import.meta.env.MODE || 'development').toLowerCase();
-    const env = envSchema.safeParse(rawEnv).success ? (rawEnv as RuntimeConfig['env']) : 'development';
+    const rawEnv = (
+      import.meta.env.VITE_APP_ENV ||
+      import.meta.env.MODE ||
+      'development'
+    ).toLowerCase();
+    const env = envSchema.safeParse(rawEnv).success
+      ? (rawEnv as RuntimeConfig['env'])
+      : 'development';
 
     const debug = import.meta.env.VITE_DEBUG_MODE === 'true' || env !== 'production';
     const apiTimeoutMs = Number(import.meta.env.VITE_API_TIMEOUT_MS) || 10000;
 
-    const firebase = buildFirebaseConfig();
+    const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL as string) || '';
 
     const configData = {
       env,
       version: RUNTIME_VERSION,
       debug,
       apiTimeoutMs,
-      firebase,
+      supabase: {
+        url: supabaseUrl,
+        connected: !!supabaseUrl && !!import.meta.env.VITE_SUPABASE_ANON_KEY,
+      },
       features: {
         enableAnalytics: import.meta.env.VITE_ENABLE_ANALYTICS === 'true',
         enableDiagnostics: import.meta.env.VITE_ENABLE_DIAGNOSTICS !== 'false',
@@ -70,7 +73,10 @@ export function loadRuntimeConfig(): RuntimeConfig {
 
     return result.data as RuntimeConfig;
   } catch (error) {
-    console.error('⚠️ [RuntimeConfig] Failed to load configuration, falling back to default:', error);
+    console.error(
+      '⚠️ [RuntimeConfig] Failed to load configuration, falling back to default:',
+      error,
+    );
     return DEFAULT_RUNTIME_CONFIG;
   }
 }

@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Session Utilities
- * 
+ *
  * Part of Slice 1.3: Session Platform.
  * Contains domain helpers to parse browser metadata, verify session status transitions,
  * and calculate idle countdown targets.
@@ -11,7 +11,11 @@ import { SessionState } from './sessionTypes';
 /**
  * Extracts clean user agent and device platform details safely.
  */
-export function parseBrowserMetadata(): { platform: string; userAgent: string; clientVersion: string } {
+export function parseBrowserMetadata(): {
+  platform: string;
+  userAgent: string;
+  clientVersion: string;
+} {
   if (typeof window === 'undefined') {
     return {
       platform: 'Server-Side Node',
@@ -22,8 +26,8 @@ export function parseBrowserMetadata(): { platform: string; userAgent: string; c
 
   const ua = navigator.userAgent;
   let platform = 'Unknown';
-  if (/android/i.test(ua)) platform = 'Android';
-  else if (/iPad|iPhone|iPod/.test(ua) && !(window as any).MSStream) platform = 'iOS';
+  if (/android/i.test(ua)) platform = 'Android';      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      else if (/iPad|iPhone|iPod/.test(ua) && !(window as any).MSStream) platform = 'iOS';
   else if (/Macintosh/i.test(ua)) platform = 'MacOS';
   else if (/Windows/i.test(ua)) platform = 'Windows';
   else if (/Linux/i.test(ua)) platform = 'Linux';
@@ -77,10 +81,7 @@ export function isValidTransition(from: SessionState, to: SessionState): boolean
       SessionState.EXPIRED,
       SessionState.SIGNING_OUT,
     ],
-    [SessionState.SIGNING_OUT]: [
-      SessionState.UNKNOWN,
-      SessionState.INITIALIZING,
-    ],
+    [SessionState.SIGNING_OUT]: [SessionState.UNKNOWN, SessionState.INITIALIZING],
   };
 
   return (transitions[from] || []).includes(to);

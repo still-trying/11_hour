@@ -24,7 +24,7 @@ export function calculateUrgency(
   deadline: Date,
   importance: number,
   estimatedMin: number,
-  timesSnoozed: number
+  timesSnoozed: number,
 ): UrgencyResult {
   const now = new Date();
   const hoursRemaining = Math.max(0, (deadline.getTime() - now.getTime()) / (1000 * 60 * 60));

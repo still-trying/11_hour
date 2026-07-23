@@ -18,9 +18,11 @@ import LoadingBoundary from './LoadingBoundary';
 const LandingPage = lazy(() => import('@/features/landing/LandingPage'));
 const AuthPage = lazy(() => import('@/features/auth/AuthPage'));
 const DashboardPage = lazy(() => import('@/features/dashboard/DashboardPage'));
+const EmergencyDashboard = lazy(() => import('@/features/emergency/EmergencyDashboard'));
 const RescueCreatePage = lazy(() => import('@/features/rescue/RescueCreatePage'));
 const RescuePage = lazy(() => import('@/features/rescue/RescuePage'));
 const ReflectionPage = lazy(() => import('@/features/reflection/ReflectionPage'));
+const HabitsPage = lazy(() => import('@/features/habits/HabitsPage'));
 const AnalyticsPage = lazy(() => import('@/features/analytics/AnalyticsPage'));
 const SettingsPage = lazy(() => import('@/features/settings/SettingsPage'));
 const NotFoundPage = lazy(() => import('./NotFoundPage'));
@@ -30,7 +32,6 @@ export function AppRoutes(): React.JSX.Element {
     <Routes>
       {/* Root Layout Boundary enclosing all application routes */}
       <Route element={<RootLayout />}>
-        
         {/* ==========================================
            PUBLIC DISCOVERY DOMAIN
            ========================================== */}
@@ -77,6 +78,16 @@ export function AppRoutes(): React.JSX.Element {
             }
           />
 
+          {/* Emergency Dashboard */}
+          <Route
+            path={ROUTES.EMERGENCY}
+            element={
+              <LoadingBoundary>
+                <EmergencyDashboard />
+              </LoadingBoundary>
+            }
+          />
+
           {/* Creation Portal */}
           <Route
             path={ROUTES.RESCUE_CREATE}
@@ -103,6 +114,16 @@ export function AppRoutes(): React.JSX.Element {
             element={
               <LoadingBoundary>
                 <ReflectionPage />
+              </LoadingBoundary>
+            }
+          />
+
+          {/* Habits Tracker */}
+          <Route
+            path={ROUTES.HABITS}
+            element={
+              <LoadingBoundary>
+                <HabitsPage />
               </LoadingBoundary>
             }
           />
@@ -140,7 +161,6 @@ export function AppRoutes(): React.JSX.Element {
             </LoadingBoundary>
           }
         />
-        
       </Route>
     </Routes>
   );

@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Protected Route Guard
- * 
+ *
  * Part of Slice 1.4: Authorization Platform & Route Access Framework.
  * Secures workspace pages (such as `/dashboard`, `/rescue/*`, `/settings`, and `/analytics`)
  * by enforcing valid authenticated sessions and evaluating role/permission/feature flag claims.
@@ -28,7 +28,9 @@ export function ProtectedRoute({ children }: ProtectedRouteProps): React.JSX.Ele
     return (
       <div className="flex h-screen w-screen flex-col items-center justify-center bg-zinc-950 text-zinc-400">
         <div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-700 border-t-zinc-400" />
-        <p className="mt-4 text-xs font-mono tracking-widest text-zinc-500 uppercase">Verifying Authorization...</p>
+        <p className="mt-4 text-xs font-mono tracking-widest text-zinc-500 uppercase">
+          Verifying Authorization...
+        </p>
       </div>
     );
   }
@@ -46,8 +48,14 @@ export function ProtectedRoute({ children }: ProtectedRouteProps): React.JSX.Ele
   }
 
   // 3. Enforce Role Protection
-  if (config.requiredRoles && config.requiredRoles.length > 0 && !config.requiredRoles.includes(role)) {
-    AuthzLogger.warn(`Forbidden role access attempt to "${path}" [User: ${currentSession?.userId} | Role: ${role} | Required: ${config.requiredRoles.join(', ')}]. Redirecting to Dashboard.`);
+  if (
+    config.requiredRoles &&
+    config.requiredRoles.length > 0 &&
+    !config.requiredRoles.includes(role)
+  ) {
+    AuthzLogger.warn(
+      `Forbidden role access attempt to "${path}" [User: ${currentSession?.userId} | Role: ${role} | Required: ${config.requiredRoles.join(', ')}]. Redirecting to Dashboard.`,
+    );
     return <Navigate to={ROUTES.DASHBOARD} replace />;
   }
 
@@ -55,18 +63,27 @@ export function ProtectedRoute({ children }: ProtectedRouteProps): React.JSX.Ele
   if (config.requiredPermissions && config.requiredPermissions.length > 0) {
     const hasAll = config.requiredPermissions.every((perm: UserPermission) => hasPermission(perm));
     if (!hasAll) {
-      AuthzLogger.warn(`Forbidden permission access attempt to "${path}" [User: ${currentSession?.userId} | Missing Required Permissions]. Redirecting to Dashboard.`);
+      AuthzLogger.warn(
+        `Forbidden permission access attempt to "${path}" [User: ${currentSession?.userId} | Missing Required Permissions]. Redirecting to Dashboard.`,
+      );
       return <Navigate to={ROUTES.DASHBOARD} replace />;
     }
   }
 
   // 5. Enforce Feature Flag Protection
-  if (config.requiredFeatureFlag && !contextIsFeatureActive(config.requiredFeatureFlag, contextFeatureFlags(role))) {
-    AuthzLogger.warn(`Feature flag "${config.requiredFeatureFlag}" is disabled. Restricting access to "${path}".`);
+  if (
+    config.requiredFeatureFlag &&
+    !contextIsFeatureActive(config.requiredFeatureFlag, contextFeatureFlags(role))
+  ) {
+    AuthzLogger.warn(
+      `Feature flag "${config.requiredFeatureFlag}" is disabled. Restricting access to "${path}".`,
+    );
     return <Navigate to={ROUTES.DASHBOARD} replace />;
   }
 
-  AuthzLogger.info(`Access granted to path "${path}" [User: ${currentSession?.userId} | Role: ${role}]`);
+  AuthzLogger.info(
+    `Access granted to path "${path}" [User: ${currentSession?.userId} | Role: ${role}]`,
+  );
   return <>{children}</>;
 }
 

@@ -24,11 +24,7 @@ const CONFETTI_COLORS = [
  * Fires a confetti animation from the center of the viewport.
  */
 export function fireConfetti(options: ConfettiOptions = {}): void {
-  const {
-    particleCount = 30,
-    spread = 60,
-    origin = { x: 0.5, y: 0.5 },
-  } = options;
+  const { particleCount = 30, spread = 60, origin = { x: 0.5, y: 0.5 } } = options;
 
   if (typeof document === 'undefined') return;
 
@@ -85,7 +81,7 @@ export function fireConfetti(options: ConfettiOptions = {}): void {
         duration: 1200 + Math.random() * 600,
         easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
         fill: 'forwards',
-      }
+      },
     );
   }
 

@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - State Platform Session Store
- * 
+ *
  * Part of Slice 1.3: Session Platform.
  * Coordinates reactive session tracking, idle countdown transitions, and telemetry
  * diagnostics for UI components. Wraps the SessionManager orchestrator.
@@ -80,6 +80,7 @@ export const useSessionStore = createStateStore<SessionStoreState, SessionStoreA
             set({ error: 'Session recovery could not be completed at this time.' });
           }
           return success;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
           set({ error: err.message || 'An unexpected recovery error occurred.' });
           return false;

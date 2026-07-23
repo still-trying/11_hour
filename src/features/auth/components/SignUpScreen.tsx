@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
 import { UserPlus, ArrowLeft, Mail, Lock, User, ShieldAlert } from 'lucide-react';
 import { AuthFormShell } from './AuthFormShell';
-import { GoogleButton } from './SharedAuthComponents';
+import { GoogleButton, FacebookButton } from './SharedAuthComponents';
 
 interface SignUpScreenProps {
   onNavigate: (mode: 'welcome' | 'signin') => void;
@@ -14,7 +14,7 @@ interface SignUpScreenProps {
 
 export function SignUpScreen({ onNavigate }: SignUpScreenProps): React.JSX.Element {
   const navigate = useNavigate();
-  const { signUp, isLoading, error: storeError, clearError } = useAuth();
+  const { signUp, signInWithGoogle, signInWithFacebook, isLoading, error: storeError, clearError } = useAuth();
 
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
@@ -74,13 +74,27 @@ export function SignUpScreen({ onNavigate }: SignUpScreenProps): React.JSX.Eleme
 
   const handleGoogleSignIn = async () => {
     clearError();
-    const mockAuthStore = (await import('@/stores/authStore')).useAuthStore.getState();
-    mockAuthStore.signUp('google.user@example.com', 'secure_oauth_pass', 'Google User');
-    navigate('/dashboard');
+    const success = await signInWithGoogle();
+    if (success) {
+      console.info('🔄 [SignUpScreen] Google OAuth succeeded. Redirecting to dashboard.');
+      navigate('/dashboard');
+    }
+  };
+
+  const handleFacebookSignIn = async () => {
+    clearError();
+    const success = await signInWithFacebook();
+    if (success) {
+      console.info('🔄 [SignUpScreen] Facebook OAuth succeeded. Redirecting to dashboard.');
+      navigate('/dashboard');
+    }
   };
 
   return (
-    <Card className="flex flex-col gap-sys-lg bg-bg-secondary border border-border-muted" padding="lg">
+    <Card
+      className="flex flex-col gap-sys-lg bg-bg-secondary border border-border-muted"
+      padding="lg"
+    >
       {/* Back navigations */}
       <div className="flex items-center justify-between">
         <button
@@ -132,7 +146,8 @@ export function SignUpScreen({ onNavigate }: SignUpScreenProps): React.JSX.Eleme
             value={displayName}
             onChange={(e) => {
               setDisplayName(e.target.value);
-              if (localErrors.displayName) setLocalErrors((prev) => ({ ...prev, displayName: undefined }));
+              if (localErrors.displayName)
+                setLocalErrors((prev) => ({ ...prev, displayName: undefined }));
             }}
             error={localErrors.displayName}
             disabled={isLoading}
@@ -165,7 +180,8 @@ export function SignUpScreen({ onNavigate }: SignUpScreenProps): React.JSX.Eleme
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
-                if (localErrors.password) setLocalErrors((prev) => ({ ...prev, password: undefined }));
+                if (localErrors.password)
+                  setLocalErrors((prev) => ({ ...prev, password: undefined }));
               }}
               error={localErrors.password}
               disabled={isLoading}
@@ -181,7 +197,8 @@ export function SignUpScreen({ onNavigate }: SignUpScreenProps): React.JSX.Eleme
               value={confirmPassword}
               onChange={(e) => {
                 setConfirmPassword(e.target.value);
-                if (localErrors.confirmPassword) setLocalErrors((prev) => ({ ...prev, confirmPassword: undefined }));
+                if (localErrors.confirmPassword)
+                  setLocalErrors((prev) => ({ ...prev, confirmPassword: undefined }));
               }}
               error={localErrors.confirmPassword}
               disabled={isLoading}
@@ -214,6 +231,7 @@ export function SignUpScreen({ onNavigate }: SignUpScreenProps): React.JSX.Eleme
       </div>
 
       <GoogleButton onClick={handleGoogleSignIn} disabled={isLoading} />
+      <FacebookButton onClick={handleFacebookSignIn} disabled={isLoading} />
 
       {/* Switcher */}
       <div className="text-center mt-1">

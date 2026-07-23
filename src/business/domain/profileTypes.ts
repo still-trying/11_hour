@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Profile Type Definitions
- * 
+ *
  * Part of Slice 1.5: User Identity Profile Platform.
  * Defines profile-specific domains, preferences, statuses, configurations,
  * and standard event contracts.
@@ -123,7 +123,7 @@ export class ProfileException extends Error {
     code: ProfileErrorCode,
     message: string,
     correlationId: string = Math.random().toString(36).substring(2, 11),
-    originalError?: unknown
+    originalError?: unknown,
   ) {
     super(message);
     this.name = 'ProfileException';
@@ -140,7 +140,10 @@ export class ProfileException extends Error {
       code: this.code,
       message: this.message,
       correlationId: this.correlationId,
-      originalMessage: this.originalError instanceof Error ? this.originalError.message : String(this.originalError || ''),
+      originalMessage:
+        this.originalError instanceof Error
+          ? this.originalError.message
+          : String(this.originalError || ''),
     };
   }
 }
@@ -155,7 +158,17 @@ export interface ProfileEventPayloads {
   [ProfileEvent.PROFILE_SYNC_STARTED]: { uid: string; timestamp: string };
   [ProfileEvent.PROFILE_SYNC_COMPLETED]: { uid: string; timestamp: string };
   [ProfileEvent.PROFILE_SYNC_FAILED]: { uid: string; error: string; timestamp: string };
-  [ProfileEvent.PROFILE_MIGRATED]: { uid: string; oldVersion: number; newVersion: number; timestamp: string };
+  [ProfileEvent.PROFILE_MIGRATED]: {
+    uid: string;
+    oldVersion: number;
+    newVersion: number;
+    timestamp: string;
+  };
   [ProfileEvent.PROFILE_DELETED]: { uid: string; timestamp: string };
-  [ProfileEvent.PROFILE_ERROR]: { error: ProfileException; timestamp: string };
+  [ProfileEvent.PROFILE_ERROR]: {
+    code: string;
+    message: string;
+    correlationId: string;
+    timestamp: string;
+  };
 }

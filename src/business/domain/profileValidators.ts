@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Profile Schema Validators
- * 
+ *
  * Part of Slice 1.5: User Identity Profile Platform.
  * Leverages Zod to strictly validate profile structure boundaries, preferences, and future-ready flags.
  */
@@ -34,18 +34,21 @@ export const profileApplicationSchema = z.object({
 export const aiPreferencesSchema = z.object({
   coachingStyle: z.enum(PROFILE_CONSTRAINTS.supportedCoachingStyles),
   preferredModel: z.string().min(1),
-  temperature: z.number()
+  temperature: z
+    .number()
     .min(PROFILE_CONSTRAINTS.aiTemperature.MIN)
     .max(PROFILE_CONSTRAINTS.aiTemperature.MAX),
   autoRefactorEnabled: z.boolean(),
 });
 
 export const productivityPreferencesSchema = z.object({
-  defaultBlockDurationMinutes: z.number()
+  defaultBlockDurationMinutes: z
+    .number()
     .int()
     .min(PROFILE_CONSTRAINTS.preferredBlockMinutes.MIN)
     .max(PROFILE_CONSTRAINTS.preferredBlockMinutes.MAX),
-  dailyFocusGoalMinutes: z.number()
+  dailyFocusGoalMinutes: z
+    .number()
     .int()
     .min(PROFILE_CONSTRAINTS.dailyFocusGoalMinutes.MIN)
     .max(PROFILE_CONSTRAINTS.dailyFocusGoalMinutes.MAX),

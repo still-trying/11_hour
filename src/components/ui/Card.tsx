@@ -14,7 +14,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
 
     const baseStyles = cn(
       'bg-bg-secondary border border-border-muted rounded-sys-lg shadow-md overflow-hidden relative',
-      isInteractive && 'cursor-pointer hover:border-border-muted/80'
+      isInteractive && 'cursor-pointer hover:border-border-muted/80',
     );
 
     const paddings = {
@@ -24,27 +24,30 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
       lg: 'p-sys-lg',
     };
 
-    const animationProps = isInteractive && !reducedMotion
-      ? {
-          whileHover: { y: -2, scale: 1.005 },
-          transition: { type: 'spring', stiffness: 350, damping: 25 },
-        }
-      : {};
+    const animationProps =
+      isInteractive && !reducedMotion
+        ? {
+            whileHover: { y: -2, scale: 1.005 },
+            transition: { type: 'spring', stiffness: 350, damping: 25 },
+          }
+        : {};
 
     const Component = isInteractive ? motion.div : 'div';
 
     return (
       <Component
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ref={ref as any}
         onClick={onClick}
         className={cn(baseStyles, paddings[padding], className)}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         {...(animationProps as any)}
         {...props}
       >
         {children}
       </Component>
     );
-  }
+  },
 );
 
 Card.displayName = 'Card';

@@ -8,7 +8,7 @@ export function PublicLayout(): React.JSX.Element {
     <div className="flex flex-col min-h-screen">
       {/* Shared header containing theme controls */}
       <AppHeader />
-      
+
       {/* Centered structured viewport contents */}
       <main className="flex-1 flex flex-col justify-center">
         <ViewportContainer className="justify-center">

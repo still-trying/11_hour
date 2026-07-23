@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Authentication Utilities
- * 
+ *
  * Part of Slice 1.2: Identity Infrastructure.
  * Contains domain helpers and secure sanitization routines for user identity data.
  */

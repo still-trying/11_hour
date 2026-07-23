@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Session Lifecycle Manager
- * 
+ *
  * Part of Slice 1.3: Session Platform.
  * Coordinates the automated integration between authentication state changes and active sessions,
  * and maintains mouse/keyboard window listeners to enforce idle timeout boundaries.
@@ -18,17 +18,18 @@ import { UserProfile } from '@/types';
 export class SessionLifecycleManager {
   private readonly sessionService: SessionService;
   private readonly identityService: IdentityService;
-  
+
   private activeSession: ISession | null = null;
   private currentLifecycleState: SessionState = SessionState.UNKNOWN;
   private unsubscribeAuth: (() => void) | null = null;
-  
+
   private lastActivityTimestamp: number = Date.now();
   private lastPingTimestamp: number = Date.now();
-  private idleCheckIntervalId: any = null;
+  private idleCheckIntervalId: ReturnType<typeof setInterval> | null = null;
   private activityListenersAttached = false;
 
-  private onStateChangedCallback: ((state: SessionState, session: ISession | null) => void) | null = null;
+  private onStateChangedCallback: ((state: SessionState, session: ISession | null) => void) | null =
+    null;
 
   constructor(sessionService: SessionService, identityService: IdentityService) {
     this.sessionService = sessionService;
@@ -38,7 +39,9 @@ export class SessionLifecycleManager {
   /**
    * Binds a global callback to receive state transition events.
    */
-  public registerStateListener(callback: (state: SessionState, session: ISession | null) => void): void {
+  public registerStateListener(
+    callback: (state: SessionState, session: ISession | null) => void,
+  ): void {
     this.onStateChangedCallback = callback;
   }
 
@@ -47,7 +50,7 @@ export class SessionLifecycleManager {
    */
   public start(): void {
     SessionLogging.info('Initializing Session Lifecycle Manager...');
-    
+
     // 1. Attempt optimistic startup hydration
     this.transitionState(SessionState.INITIALIZING);
     const hydrated = SessionHydration.hydrate();
@@ -61,9 +64,11 @@ export class SessionLifecycleManager {
     }
 
     // 2. Attach Auth state subscription
-    this.unsubscribeAuth = this.identityService.onAuthStateChanged(async (userProfile: UserProfile | null) => {
-      await this.handleAuthStateChanged(userProfile);
-    });
+    this.unsubscribeAuth = this.identityService.onAuthStateChanged(
+      async (userProfile: UserProfile | null) => {
+        await this.handleAuthStateChanged(userProfile);
+      },
+    );
 
     // 3. Launch background idle timeout monitors
     this.startIdleMonitor();
@@ -75,7 +80,7 @@ export class SessionLifecycleManager {
    */
   public stop(): void {
     SessionLogging.info('Stopping Session Lifecycle Manager...');
-    
+
     if (this.unsubscribeAuth) {
       this.unsubscribeAuth();
       this.unsubscribeAuth = null;
@@ -90,16 +95,17 @@ export class SessionLifecycleManager {
    */
   public recordLocalActivity(): void {
     this.lastActivityTimestamp = Date.now();
-    
+
     if (!this.activeSession) return;
 
     // Throttle remote database writes to prevent network flooding (via PING_INTERVAL_MS)
     const timeSinceLastPing = Date.now() - this.lastPingTimestamp;
     if (timeSinceLastPing >= SESSION_TIMEOUTS.PING_INTERVAL_MS) {
       this.lastPingTimestamp = Date.now();
-      
+
       // Update session activity asynchronously
-      this.sessionService.pingActivity(this.activeSession)
+      this.sessionService
+        .pingActivity(this.activeSession)
         .then((updated) => {
           this.activeSession = updated;
           if (this.onStateChangedCallback) {
@@ -124,7 +130,8 @@ export class SessionLifecycleManager {
     try {
       const recovered = await SessionRecovery.recover(
         this.activeSession,
-        (this.sessionService as any).repository
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (this.sessionService as any).repository,
       );
       this.activeSession = recovered;
       this.lastActivityTimestamp = new Date(recovered.lastActiveAt).getTime();
@@ -138,11 +145,11 @@ export class SessionLifecycleManager {
   }
 
   /**
-   * Responds to structural changes in core Firebase/Identity authentication status.
+   * Responds to structural changes in core Identity authentication status.
    */
   private async handleAuthStateChanged(userProfile: UserProfile | null): Promise<void> {
     SessionLogging.info(
-      `Auth lifecycle trigger detected. User: ${userProfile ? userProfile.email : '[Unauthenticated]'}`
+      `Auth lifecycle trigger detected. User: ${userProfile ? userProfile.email : '[Unauthenticated]'}`,
     );
 
     if (userProfile) {
@@ -172,7 +179,7 @@ export class SessionLifecycleManager {
         const sessionToTerminate = this.activeSession;
         this.activeSession = null;
         this.transitionState(SessionState.SIGNING_OUT);
-        
+
         try {
           await this.sessionService.terminateSession(sessionToTerminate);
         } catch (e) {
@@ -192,7 +199,7 @@ export class SessionLifecycleManager {
    */
   private startIdleMonitor(): void {
     this.stopIdleMonitor();
-    
+
     // Check every 15 seconds to minimize battery/main-thread drains
     this.idleCheckIntervalId = setInterval(() => {
       this.evaluateIdleTimeout();
@@ -215,14 +222,14 @@ export class SessionLifecycleManager {
     }
 
     const idleDuration = Date.now() - this.lastActivityTimestamp;
-    
+
     if (idleDuration >= SESSION_TIMEOUTS.IDLE_TIMEOUT_MS) {
       this.stopIdleMonitor();
       this.transitionState(SessionState.EXPIRED);
-      
+
       const sessionToExpire = this.activeSession;
       this.activeSession = null;
-      
+
       this.sessionService.expireSession(sessionToExpire).catch((e) => {
         SessionLogging.error('Failed to gracefully sync session expiration:', e);
       });
@@ -237,7 +244,7 @@ export class SessionLifecycleManager {
 
     SessionLogging.info(`Lifecycle Transition: [${this.currentLifecycleState}] -> [${newState}]`);
     this.currentLifecycleState = newState;
-    
+
     if (this.onStateChangedCallback) {
       this.onStateChangedCallback(newState, this.activeSession);
     }

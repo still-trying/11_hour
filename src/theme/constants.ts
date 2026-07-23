@@ -30,13 +30,15 @@ export const THEME_REGISTRY: Record<ThemeMode, ThemeMetadata> = {
   dark: {
     id: 'dark',
     name: 'System Slate (Dark)',
-    description: 'Deep obsidian and soothing slate theme, optimized for late-night focus and low eye strain.',
+    description:
+      'Deep obsidian and soothing slate theme, optimized for late-night focus and low eye strain.',
     isAccessibilityFocused: false,
   },
   light: {
     id: 'light',
     name: 'Snow White (Light)',
-    description: 'Clean, crisp high-luminosity light layout, optimized for high ambient light environments.',
+    description:
+      'Clean, crisp high-luminosity light layout, optimized for high ambient light environments.',
     isAccessibilityFocused: false,
   },
   system: {
@@ -48,7 +50,8 @@ export const THEME_REGISTRY: Record<ThemeMode, ThemeMetadata> = {
   'high-contrast': {
     id: 'high-contrast',
     name: 'High Contrast (Accessibility)',
-    description: 'Pure black backdrop with maximum luminance borders and text (WCAG AAA compliant).',
+    description:
+      'Pure black backdrop with maximum luminance borders and text (WCAG AAA compliant).',
     isAccessibilityFocused: true,
   },
 };

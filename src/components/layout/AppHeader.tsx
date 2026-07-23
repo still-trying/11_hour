@@ -16,8 +16,8 @@ export function AppHeader(): React.JSX.Element {
     <header className="flex items-center justify-between border-b border-border-muted bg-bg-secondary px-sys-md py-3 shadow-md animate-fade-in relative z-50">
       {/* Brand & Breadcrumbs Section */}
       <div className="flex items-center gap-sys-sm">
-        <Link 
-          to={ROUTES.LANDING} 
+        <Link
+          to={ROUTES.LANDING}
           className="flex items-center gap-2 group focus:outline-none"
           aria-label="11_HOUR Home"
         >
@@ -33,7 +33,10 @@ export function AppHeader(): React.JSX.Element {
         <ChevronRight size={14} className="text-text-muted hidden sm:inline" />
 
         {/* Breadcrumb Trace */}
-        <nav className="flex items-center font-mono text-xs text-text-muted gap-1 sm:gap-1.5" aria-label="Breadcrumbs">
+        <nav
+          className="flex items-center font-mono text-xs text-text-muted gap-1 sm:gap-1.5"
+          aria-label="Breadcrumbs"
+        >
           {breadcrumbs.map((crumb, i) => (
             <React.Fragment key={crumb.path}>
               {i > 0 && <ChevronRight size={12} className="text-text-muted/50" />}

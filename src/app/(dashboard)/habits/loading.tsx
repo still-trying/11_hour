@@ -1,4 +1,4 @@
-import { Skeleton } from '@/components/ui/Skeleton'
+import { Skeleton } from '@/components/ui/Skeleton';
 
 export default function HabitsLoading() {
   return (
@@ -28,5 +28,5 @@ export default function HabitsLoading() {
       {/* Progress Summary */}
       <Skeleton className="h-10 w-48 rounded-lg mx-auto" />
     </div>
-  )
+  );
 }

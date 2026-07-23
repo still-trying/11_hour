@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Profile Domain Business Service
- * 
+ *
  * Part of Slice 1.5: User Identity Profile Platform.
  * Acts as the primary orchestrator, unifying initialization flows, synchronization queues,
  * and profile lifecycle actions under a clean public API.
@@ -32,7 +32,7 @@ export class ProfileService {
     uid: string,
     email: string,
     displayName?: string | null,
-    photoURL?: string | null
+    photoURL?: string | null,
   ): Promise<IDomainUserProfile> {
     return this.initFlow.execute(uid, email, displayName, photoURL);
   }
@@ -47,7 +47,10 @@ export class ProfileService {
   /**
    * Updates user preferences, identity fields, or future-ready flags.
    */
-  public async updateProfile(uid: string, changes: Partial<IDomainUserProfile>): Promise<IDomainUserProfile> {
+  public async updateProfile(
+    uid: string,
+    changes: Partial<IDomainUserProfile>,
+  ): Promise<IDomainUserProfile> {
     return this.lifecycleManager.updateProfile(uid, changes);
   }
 
@@ -75,7 +78,10 @@ export class ProfileService {
   /**
    * Registers callback to listen for real-time document updates.
    */
-  public onProfileChanged(uid: string, callback: (profile: IDomainUserProfile | null) => void): () => void {
+  public onProfileChanged(
+    uid: string,
+    callback: (profile: IDomainUserProfile | null) => void,
+  ): () => void {
     return this.repository.onProfileChanged(uid, (profile) => {
       if (profile) {
         // Sync local cache with real-time remote updates

@@ -25,7 +25,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       type = 'button',
       ...props
     },
-    ref
+    ref,
   ) => {
     const { reducedMotion } = useTheme();
     const isDisabled = disabled || isLoading;
@@ -33,14 +33,18 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     // Semantic visual class mappings
     const baseStyles = cn(
       'inline-flex items-center justify-center font-sans font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-amber focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary disabled:opacity-50 disabled:pointer-events-none cursor-pointer',
-      'rounded-sys-md'
+      'rounded-sys-md',
     );
 
     const variants = {
-      primary: 'bg-accent-amber text-bg-primary hover:bg-amber-600 focus-visible:ring-accent-amber active:bg-amber-700 font-semibold',
-      secondary: 'bg-bg-secondary text-text-primary border border-border-muted hover:bg-border-muted focus-visible:ring-text-muted',
-      glass: 'bg-bg-secondary/40 backdrop-blur-md text-text-primary border border-border-muted/60 hover:bg-bg-secondary/60 focus-visible:ring-accent-blue',
-      ghost: 'bg-transparent text-text-muted hover:text-text-primary hover:bg-bg-secondary/30 focus-visible:ring-text-muted',
+      primary:
+        'bg-accent-amber text-bg-primary hover:bg-amber-600 focus-visible:ring-accent-amber active:bg-amber-700 font-semibold',
+      secondary:
+        'bg-bg-secondary text-text-primary border border-border-muted hover:bg-border-muted focus-visible:ring-text-muted',
+      glass:
+        'bg-bg-secondary/40 backdrop-blur-md text-text-primary border border-border-muted/60 hover:bg-bg-secondary/60 focus-visible:ring-accent-blue',
+      ghost:
+        'bg-transparent text-text-muted hover:text-text-primary hover:bg-bg-secondary/30 focus-visible:ring-text-muted',
     };
 
     const sizes = {
@@ -60,12 +64,14 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     return (
       <motion.button
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ref={ref as any}
         type={type}
         disabled={isDisabled}
         aria-busy={isLoading}
         className={cn(baseStyles, variants[variant], sizes[size], className)}
         {...animationProps}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         {...(props as any)}
       >
         {isLoading && (
@@ -95,7 +101,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {!isLoading && rightIcon && <span className="flex shrink-0">{rightIcon}</span>}
       </motion.button>
     );
-  }
+  },
 );
 
 Button.displayName = 'Button';

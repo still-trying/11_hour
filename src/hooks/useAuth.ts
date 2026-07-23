@@ -7,7 +7,7 @@ type CombinedStoreState = AuthState & AuthActions & BaseState & BaseActions;
  * 11_HOUR - Unified Authentication Hook
  *
  * Provides a streamlined interface for components to consume authentication
- * state, loading phases, visual errors, and mock execution triggers.
+ * state, loading phases, and visual errors.
  */
 export function useAuth() {
   const user = useAuthStore((state: CombinedStoreState) => state.user);
@@ -20,8 +20,11 @@ export function useAuth() {
   const signIn = useAuthStore((state: CombinedStoreState) => state.signIn);
   const signUp = useAuthStore((state: CombinedStoreState) => state.signUp);
   const signOut = useAuthStore((state: CombinedStoreState) => state.signOut);
-  const sendForgotPasswordReset = useAuthStore((state: CombinedStoreState) => state.sendForgotPasswordReset);
+  const sendForgotPasswordReset = useAuthStore(
+    (state: CombinedStoreState) => state.sendForgotPasswordReset,
+  );
   const signInWithGoogle = useAuthStore((state: CombinedStoreState) => state.signInWithGoogle);
+  const signInWithFacebook = useAuthStore((state: CombinedStoreState) => state.signInWithFacebook);
   const clearError = useAuthStore((state: CombinedStoreState) => state.clearError);
   const clearResetSuccess = useAuthStore((state: CombinedStoreState) => state.clearResetSuccess);
 
@@ -37,6 +40,7 @@ export function useAuth() {
     signOut,
     sendForgotPasswordReset,
     signInWithGoogle,
+    signInWithFacebook,
     clearError,
     clearResetSuccess,
   };

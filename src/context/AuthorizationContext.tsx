@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - React Authorization Context Provider
- * 
+ *
  * Part of Slice 1.4: Authorization Platform & Route Access Framework.
  * Subscribes to the unified Session Platform and derives/hydrates authorization contexts,
  * exposing real-time RBAC claims and permission queries to all UI elements.
@@ -32,7 +32,7 @@ export const AuthorizationProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     let active = true;
-    
+
     Promise.resolve().then(() => {
       if (active) {
         setLoading(true);
@@ -42,12 +42,15 @@ export const AuthorizationProvider: React.FC<{ children: React.ReactNode }> = ({
     const hydrateContext = async () => {
       try {
         AuthzLogger.info('Session state updated, re-hydrating authorization context...');
-        const authzContext = await authorizationServiceInstance.getAuthorizationContextForSession(currentSession);
-        
+        const authzContext =
+          await authorizationServiceInstance.getAuthorizationContextForSession(currentSession);
+
         if (active) {
           setContext(authzContext);
           setLoading(false);
-          AuthzLogger.info(`Successfully hydrated authorization context for role: ${authzContext.role}`);
+          AuthzLogger.info(
+            `Successfully hydrated authorization context for role: ${authzContext.role}`,
+          );
         }
       } catch (err) {
         AuthzLogger.error('Catastrophic failure during authorization context hydration:', err);
@@ -82,11 +85,7 @@ export const AuthorizationProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, [context, role, permissions, featureFlags, loading]);
 
-  return (
-    <AuthorizationContext.Provider value={value}>
-      {children}
-    </AuthorizationContext.Provider>
-  );
+  return <AuthorizationContext.Provider value={value}>{children}</AuthorizationContext.Provider>;
 };
 
 export const useAuthorization = (): IAuthorizationContextValue => {

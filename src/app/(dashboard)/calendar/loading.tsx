@@ -1,4 +1,4 @@
-import { Skeleton, StatsCardSkeleton } from '@/components/ui/Skeleton'
+import { Skeleton, StatsCardSkeleton } from '@/components/ui/Skeleton';
 
 export default function CalendarLoading() {
   return (
@@ -40,5 +40,5 @@ export default function CalendarLoading() {
         ))}
       </div>
     </div>
-  )
+  );
 }

@@ -21,7 +21,7 @@ export function useTheme(): ThemeContextValue {
   const context = useContext(ThemeContext);
   if (!context) {
     throw new Error(
-      '[Theme Engine] useTheme must be consumed within a valid <ThemeProvider> component.'
+      '[Theme Engine] useTheme must be consumed within a valid <ThemeProvider> component.',
     );
   }
   return context;

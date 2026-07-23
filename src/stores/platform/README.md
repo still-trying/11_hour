@@ -30,16 +30,16 @@ The state platform is designed around strict separation of concerns, complete de
 
 ## 📂 Core Files
 
-| File | Purpose |
-| :--- | :--- |
-| `constants.ts` | Global store identifiers, versions, storage engines, and logging prefixes. |
-| `contracts.ts` | Strongly-typed generic interfaces for state, actions, configs, and registry items. |
-| `storeRegistry.ts` | Centralized registry managing store lifecycle, global resets, and hydration state. |
-| `persistence.ts` | Memory, Session, and Local storage adapters, hydration hooks, and Firestore sync queues. |
-| `middleware.ts` | Layered middlewares for logging transitions, Zod schema validation, and error rollback. |
-| `factory.ts` | Core store initializer (`createStateStore`) with boilerplate automated injection. |
-| `utils.ts` | High-efficiency automatic selector generator and reactive component state slice validators. |
-| `eventBus.ts` | Asynchronous, decoupled, typed event dispatcher for cross-store side-effects. |
+| File               | Purpose                                                                                     |
+| :----------------- | :------------------------------------------------------------------------------------------ |
+| `constants.ts`     | Global store identifiers, versions, storage engines, and logging prefixes.                  |
+| `contracts.ts`     | Strongly-typed generic interfaces for state, actions, configs, and registry items.          |
+| `storeRegistry.ts` | Centralized registry managing store lifecycle, global resets, and hydration state.          |
+| `persistence.ts`   | Memory, Session, and Local storage adapters, hydration hooks, and Firestore sync queues.    |
+| `middleware.ts`    | Layered middlewares for logging transitions, Zod schema validation, and error rollback.     |
+| `factory.ts`       | Core store initializer (`createStateStore`) with boilerplate automated injection.           |
+| `utils.ts`         | High-efficiency automatic selector generator and reactive component state slice validators. |
+| `eventBus.ts`      | Asynchronous, decoupled, typed event dispatcher for cross-store side-effects.               |
 
 ---
 
@@ -175,10 +175,13 @@ useEffect(() => {
 ## 🛡️ Robust Fail-Safe Features
 
 ### 🔒 Runtime State Validator
+
 All state mutations are validated against the store's optional Zod schema before writing. If a mutation attempts to introduce corrupt or malformed fields, the write is automatically blocked, and a detailed console log containing a trace Correlation ID is generated.
 
 ### 🚨 Mutation Error Boundary
+
 If an action causes a synchronous crash during state calculation, the state boundary catches the exception, generates a Correlation ID, logs details to the console, and restores the store instantly to its last stable snapshot.
 
 ### 🔄 Schema Migrations
+
 Persistent stores are versioned. If a user returns with an older cached state, the factory automatically routes the old state through the sorted schema migrations array, upgrading the fields step-by-step to prevent structural breakages.

@@ -11,15 +11,17 @@ export const ROUTES = {
   LANDING: '/',
   AUTH: '/auth',
   DASHBOARD: '/dashboard',
+  EMERGENCY: '/emergency',
   RESCUE_CREATE: '/rescue/create',
   RESCUE_WORKSPACE: '/rescue/:id',
   REFLECTION: '/reflection/:id',
+  HABITS: '/habits',
   ANALYTICS: '/analytics',
   SETTINGS: '/settings',
   WILDCARD: '*',
 } as const;
 
-export type RoutePath = typeof ROUTES[keyof typeof ROUTES];
+export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];
 
 /**
  * Centrally declared Route Registry mapping each path to its functional metadata,
@@ -28,7 +30,8 @@ export type RoutePath = typeof ROUTES[keyof typeof ROUTES];
 export const ROUTE_METADATA_REGISTRY: Record<string, RouteMeta> = {
   [ROUTES.LANDING]: {
     title: 'The Last-Minute Life Saver',
-    description: 'A cognitive buffer and execution intelligence engine to rescue high-urgency deadlines.',
+    description:
+      'A cognitive buffer and execution intelligence engine to rescue high-urgency deadlines.',
     requiresAuth: false,
     layout: 'public',
     analyticsName: 'landing',
@@ -46,6 +49,14 @@ export const ROUTE_METADATA_REGISTRY: Record<string, RouteMeta> = {
     requiresAuth: true,
     layout: 'protected',
     analyticsName: 'dashboard',
+  },
+  [ROUTES.EMERGENCY]: {
+    title: 'Emergency Dashboard',
+    description:
+      'Red-alert view showing only meltdown, critical, and overdue tasks with live countdowns.',
+    requiresAuth: true,
+    layout: 'protected',
+    analyticsName: 'emergency',
   },
   [ROUTES.RESCUE_CREATE]: {
     title: 'Brain Dump Portal',
@@ -67,6 +78,13 @@ export const ROUTE_METADATA_REGISTRY: Record<string, RouteMeta> = {
     requiresAuth: true,
     layout: 'protected',
     analyticsName: 'reflection',
+  },
+  [ROUTES.HABITS]: {
+    title: 'Habit Tracker',
+    description: 'Daily habit tracking with weekly grid view and streak monitoring.',
+    requiresAuth: true,
+    layout: 'protected',
+    analyticsName: 'habits',
   },
   [ROUTES.ANALYTICS]: {
     title: 'Performance & History',
@@ -93,6 +111,20 @@ export const NAVIGATION_CONFIG = {
       id: 'dashboard',
       label: 'Dashboard',
       path: ROUTES.DASHBOARD,
+      iconName: 'LayoutDashboard',
+      requiresAuth: true,
+    },
+    {
+      id: 'emergency',
+      label: '🚨 Emergency',
+      path: ROUTES.EMERGENCY,
+      iconName: 'Siren',
+      requiresAuth: true,
+    },
+    {
+      id: 'habits',
+      label: 'Habits',
+      path: ROUTES.HABITS,
       iconName: 'LayoutDashboard',
       requiresAuth: true,
     },

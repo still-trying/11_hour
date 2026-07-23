@@ -29,7 +29,7 @@ Snowflake supports several authentication methods, each with different required 
 
 ## Connection Styles
 
-Prefer picking **one** style and using it consistently. Mixing them (setting `uri` plus additional `adbc.snowflake.sql.*` options) is technically possible but discouraged — it splits the connection config across two places and makes it easy to set the auth info ambiguously (e.g., `authenticator` in the URI *and* `adbc.snowflake.sql.auth_type` as an option).
+Prefer picking **one** style and using it consistently. Mixing them (setting `uri` plus additional `adbc.snowflake.sql.*` options) is technically possible but discouraged — it splits the connection config across two places and makes it easy to set the auth info ambiguously (e.g., `authenticator` in the URI _and_ `adbc.snowflake.sql.auth_type` as an option).
 
 ### URI style
 
@@ -47,48 +47,48 @@ URI query parameters: `warehouse`, `role`, `authenticator`, `token` (for PAT), p
 
 Omit `uri` and pass these keys directly:
 
-| Key | Purpose |
-| --- | --- |
-| `adbc.snowflake.sql.account` | Account identifier |
-| `username` | Username |
-| `password` | Password (secret) |
-| `adbc.snowflake.sql.auth_type` | Auth method (see table below) |
-| `adbc.snowflake.sql.client_option.jwt_private_key` | Path to a PEM-encoded RSA private key file (JWT auth) |
-| `adbc.snowflake.sql.client_option.jwt_private_key_pkcs8_value` | Inline PEM private key contents (secret; JWT auth) |
+| Key                                                               | Purpose                                                          |
+| ----------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `adbc.snowflake.sql.account`                                      | Account identifier                                               |
+| `username`                                                        | Username                                                         |
+| `password`                                                        | Password (secret)                                                |
+| `adbc.snowflake.sql.auth_type`                                    | Auth method (see table below)                                    |
+| `adbc.snowflake.sql.client_option.jwt_private_key`                | Path to a PEM-encoded RSA private key file (JWT auth)            |
+| `adbc.snowflake.sql.client_option.jwt_private_key_pkcs8_value`    | Inline PEM private key contents (secret; JWT auth)               |
 | `adbc.snowflake.sql.client_option.jwt_private_key_pkcs8_password` | Passphrase for an encrypted PKCS8 private key (secret; JWT auth) |
-| `adbc.snowflake.sql.client_option.auth_token` | Token value (PAT, OAuth, and other token-based auth methods) |
-| `adbc.snowflake.sql.client_option.okta_url` | Okta endpoint URL (Okta auth) |
-| `adbc.snowflake.sql.client_option.identity_provider` | Identity provider for Workload Identity Federation (`auth_wif`) |
-| `adbc.snowflake.sql.client_option.ocsp_fail_open_mode` | OCSP fail-open behavior (certificate revocation checks) |
-| `adbc.snowflake.sql.db` | Default database |
-| `adbc.snowflake.sql.schema` | Default schema |
-| `adbc.snowflake.sql.warehouse` | Default warehouse |
-| `adbc.snowflake.sql.role` | Default role |
-| `adbc.snowflake.sql.client_option.tls_skip_verify` | `"true"` to disable TLS verification (not for production) |
+| `adbc.snowflake.sql.client_option.auth_token`                     | Token value (PAT, OAuth, and other token-based auth methods)     |
+| `adbc.snowflake.sql.client_option.okta_url`                       | Okta endpoint URL (Okta auth)                                    |
+| `adbc.snowflake.sql.client_option.identity_provider`              | Identity provider for Workload Identity Federation (`auth_wif`)  |
+| `adbc.snowflake.sql.client_option.ocsp_fail_open_mode`            | OCSP fail-open behavior (certificate revocation checks)          |
+| `adbc.snowflake.sql.db`                                           | Default database                                                 |
+| `adbc.snowflake.sql.schema`                                       | Default schema                                                   |
+| `adbc.snowflake.sql.warehouse`                                    | Default warehouse                                                |
+| `adbc.snowflake.sql.role`                                         | Default role                                                     |
+| `adbc.snowflake.sql.client_option.tls_skip_verify`                | `"true"` to disable TLS verification (not for production)        |
 
 The following keys are rarely needed — only set them when you have to override the default host construction (for example, to reach a non-standard region endpoint or a private/proxy URL):
 
-| Key | Purpose |
-| --- | --- |
-| `adbc.snowflake.sql.region` | Region override |
+| Key                               | Purpose                    |
+| --------------------------------- | -------------------------- |
+| `adbc.snowflake.sql.region`       | Region override            |
 | `adbc.snowflake.sql.uri.protocol` | `http` or `https` override |
-| `adbc.snowflake.sql.uri.port` | Port override |
-| `adbc.snowflake.sql.uri.host` | Host override |
+| `adbc.snowflake.sql.uri.port`     | Port override              |
+| `adbc.snowflake.sql.uri.host`     | Host override              |
 
 ### Auth method value mapping
 
 The two styles use different value names for the same auth methods:
 
-| Auth method | Options: `adbc.snowflake.sql.auth_type` | URI: `authenticator` |
-| --- | --- | --- |
-| Username / password (default) | `auth_snowflake` | `snowflake` |
-| JWT key pair | `auth_jwt` | `snowflake_jwt` |
-| Programmatic access token (PAT) | `auth_pat` | `programmatic_access_token` |
-| OAuth | `auth_oauth` | `oauth` |
-| External browser (SSO) | `auth_ext_browser` | `externalbrowser` |
-| Okta | `auth_okta` | `okta_endpoint` |
-| Username / password + MFA | `auth_mfa` | `username_password_mfa` |
-| Workload Identity Federation | `auth_wif` | *(consult upstream docs)* |
+| Auth method                     | Options: `adbc.snowflake.sql.auth_type` | URI: `authenticator`        |
+| ------------------------------- | --------------------------------------- | --------------------------- |
+| Username / password (default)   | `auth_snowflake`                        | `snowflake`                 |
+| JWT key pair                    | `auth_jwt`                              | `snowflake_jwt`             |
+| Programmatic access token (PAT) | `auth_pat`                              | `programmatic_access_token` |
+| OAuth                           | `auth_oauth`                            | `oauth`                     |
+| External browser (SSO)          | `auth_ext_browser`                      | `externalbrowser`           |
+| Okta                            | `auth_okta`                             | `okta_endpoint`             |
+| Username / password + MFA       | `auth_mfa`                              | `username_password_mfa`     |
+| Workload Identity Federation    | `auth_wif`                              | _(consult upstream docs)_   |
 
 Auth info must match the chosen style: when `uri` is set, `authenticator` goes in the URI query string; when using options, set `adbc.snowflake.sql.auth_type`.
 

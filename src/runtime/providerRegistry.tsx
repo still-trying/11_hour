@@ -17,7 +17,10 @@ interface ProviderComposerProps {
  * Iteratively reduces the Provider Registry list into a single, nested React tree.
  * Renders providers from top-to-bottom (first entry wraps all subsequent entries).
  */
-export function ProviderComposer({ providers, children }: ProviderComposerProps): React.JSX.Element {
+export function ProviderComposer({
+  providers,
+  children,
+}: ProviderComposerProps): React.JSX.Element {
   return providers.reduceRight((acc, provider) => {
     const Component = provider.component;
     return <Component {...(provider.props || {})}>{acc}</Component>;
@@ -35,7 +38,9 @@ class ProviderRegistryClass {
    */
   register(entry: ProviderEntry): void {
     if (this.providers.some((p) => p.id === entry.id)) {
-      console.warn(`⚠️ [ProviderRegistry] Provider with ID "${entry.id}" is already registered. Overwriting.`);
+      console.warn(
+        `⚠️ [ProviderRegistry] Provider with ID "${entry.id}" is already registered. Overwriting.`,
+      );
       this.providers = this.providers.map((p) => (p.id === entry.id ? entry : p));
     } else {
       this.providers.push(entry);

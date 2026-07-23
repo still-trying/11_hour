@@ -25,7 +25,7 @@ export interface NotificationActions {
   addNotification: (
     message: string,
     type: 'info' | 'success' | 'warning' | 'error',
-    durationMs?: number
+    durationMs?: number,
   ) => string;
   dismissNotification: (id: string) => void;
   clearNotifications: () => void;

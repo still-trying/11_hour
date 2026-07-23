@@ -6,7 +6,6 @@
  */
 
 import React from 'react';
-import { FirebaseConfig } from '@/firebase/types';
 
 /**
  * Startup Lifecycle Phases in deterministic order.
@@ -14,7 +13,7 @@ import { FirebaseConfig } from '@/firebase/types';
 export enum StartupPhase {
   ENVIRONMENT = 'ENVIRONMENT',
   CONFIGURATION = 'CONFIGURATION',
-  FIREBASE_PLATFORM = 'FIREBASE_PLATFORM',
+  DATA_PLATFORM = 'DATA_PLATFORM',
   THEME_ENGINE = 'THEME_ENGINE',
   STATE_PLATFORM = 'STATE_PLATFORM',
   ROUTER = 'ROUTER',
@@ -48,8 +47,8 @@ export interface DiagnosticMetrics {
   totalBootstrapTimeMs: number;
   environment: 'development' | 'production' | 'test';
   isOnline: boolean;
-  firebaseConnected: boolean;
-  isFirebaseMock: boolean;
+  supabaseConnected: boolean;
+  isSupabaseMock: boolean;
   registeredStores: string[];
   allStoresHydrated: boolean;
   activeErrors: string[];
@@ -64,7 +63,10 @@ export interface RuntimeConfig {
   version: string;
   debug: boolean;
   apiTimeoutMs: number;
-  firebase: FirebaseConfig;
+  supabase: {
+    url: string;
+    connected: boolean;
+  };
   features: {
     enableAnalytics: boolean;
     enableDiagnostics: boolean;
@@ -78,8 +80,9 @@ export interface RuntimeConfig {
  */
 export interface ProviderEntry {
   id: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   component: React.ComponentType<any>;
-  props?: Record<string, any>;
+  props?: Record<string, unknown>;
 }
 
 /**

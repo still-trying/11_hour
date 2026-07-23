@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Policy Evaluator
- * 
+ *
  * Part of Slice 1.4: Authorization Platform & Route Access Framework.
  * Executes specific Authorization Policies against a hydrated context, mapping and
  * capturing evaluation exceptions.

@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Profile Initialization and Bootstrapping Flow
- * 
+ *
  * Part of Slice 1.5: User Identity Profile Platform.
  * Orchestrates user sign-in profile detection, defaults hydration,
  * database migrations, and schema validation.
@@ -30,10 +30,15 @@ export class ProfileInitializationFlow {
    * If a profile doesn't exist, it auto-generates a default profile and stores it.
    * If it exists, it validates, migrates, and reconciles the profile document.
    */
-  public async execute(uid: string, email: string, displayName?: string | null, photoURL?: string | null): Promise<IDomainUserProfile> {
+  public async execute(
+    uid: string,
+    email: string,
+    displayName?: string | null,
+    photoURL?: string | null,
+  ): Promise<IDomainUserProfile> {
     try {
       ProfileLogging.info(`Starting initialization flow for user: ${uid} (${email})`);
-      
+
       // 1. Attempt to retrieve remote profile
       const remoteProfile = await this.repository.getProfile(uid);
       const localProfile = this.syncManager.getLocalCache(uid);
@@ -44,11 +49,11 @@ export class ProfileInitializationFlow {
         // First-time user, generate defaults
         ProfileLogging.info(`No existing profile detected. Creating defaults for user: ${uid}`);
         finalProfile = ProfileUtils.generateDefaultProfile(uid, email, displayName, photoURL);
-        
+
         // Persist default profile
         await this.repository.saveProfile(finalProfile);
         this.syncManager.setLocalCache(uid, finalProfile);
-        
+
         profileEventDispatcherInstance.dispatchCreated(uid);
       } else {
         // Merging and reconciling
@@ -56,7 +61,11 @@ export class ProfileInitializationFlow {
 
         // 2. Schema Evolution / Migration Support
         if (activeProfile.application.profileVersion < PROFILE_VERSION) {
-          activeProfile = await this.migrate(activeProfile, activeProfile.application.profileVersion, PROFILE_VERSION);
+          activeProfile = await this.migrate(
+            activeProfile,
+            activeProfile.application.profileVersion,
+            PROFILE_VERSION,
+          );
         }
 
         // 3. Diagnostics & Integrity self-healing check
@@ -90,7 +99,11 @@ export class ProfileInitializationFlow {
   /**
    * Processes schema migrations for legacy profiles to avoid database corruption or runtime crashes.
    */
-  private async migrate(profile: IDomainUserProfile, fromVersion: number, toVersion: number): Promise<IDomainUserProfile> {
+  private async migrate(
+    profile: IDomainUserProfile,
+    fromVersion: number,
+    toVersion: number,
+  ): Promise<IDomainUserProfile> {
     ProfileLogging.info(`Executing profile version migration: v${fromVersion} -> v${toVersion}`);
     const migrated = { ...profile };
 

@@ -33,6 +33,7 @@ export interface UIActions {
   setStatus: (status: RuntimeStatus) => void;
   setOnline: (online: boolean) => void;
   setMaintenance: (maintenance: boolean) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   triggerFatalCrash: (error: any) => void;
   recoverFromCrash: () => Promise<boolean>;
   toggleDiagnosticOverlay: () => void;
@@ -69,10 +70,16 @@ export const useUIStore = createStateStore<UIState, UIActions>({
           notifStore.addNotification('Network connection successfully restored.', 'success', 4000);
           // If we were offline, return to Ready (or Maintenance if active)
           if (get().status === RuntimeStatus.OFFLINE) {
-            actions.setStatus(get().isMaintenance ? RuntimeStatus.MAINTENANCE : RuntimeStatus.READY);
+            actions.setStatus(
+              get().isMaintenance ? RuntimeStatus.MAINTENANCE : RuntimeStatus.READY,
+            );
           }
         } else {
-          notifStore.addNotification('Offline Mode Active. Progress will save locally.', 'error', 0); // persistent
+          notifStore.addNotification(
+            'Offline Mode Active. Progress will save locally.',
+            'error',
+            0,
+          ); // persistent
           if (get().status === RuntimeStatus.READY || get().status === RuntimeStatus.INITIALIZING) {
             actions.setStatus(RuntimeStatus.OFFLINE);
           }
@@ -99,14 +106,18 @@ export const useUIStore = createStateStore<UIState, UIActions>({
             stack: error?.stack,
           },
         });
-        console.error(`🚨 [FatalError] Application halted due to uncaught crash. Correlation ID: ${correlationId}`);
+        console.error(
+          `🚨 [FatalError] Application halted due to uncaught crash. Correlation ID: ${correlationId}`,
+        );
       },
 
       recoverFromCrash: async () => {
         if (get().status !== RuntimeStatus.FATAL_ERROR) return false;
 
         actions.setStatus(RuntimeStatus.RECOVERING);
-        useNotificationStore.getState().addNotification('Initializing automated container self-healing...', 'info', 3000);
+        useNotificationStore
+          .getState()
+          .addNotification('Initializing automated container self-healing...', 'info', 3000);
 
         // Clear non-persistent stores
         RuntimeRecoveryManager.clearVolatileStateCaches();
@@ -117,11 +128,15 @@ export const useUIStore = createStateStore<UIState, UIActions>({
         if (success) {
           set({ fatalError: null });
           actions.setStatus(RuntimeStatus.READY);
-          useNotificationStore.getState().addNotification('System core stabilized. Execution resumed.', 'success', 4000);
+          useNotificationStore
+            .getState()
+            .addNotification('System core stabilized. Execution resumed.', 'success', 4000);
           return true;
         } else {
           actions.setStatus(RuntimeStatus.FATAL_ERROR);
-          useNotificationStore.getState().addNotification('Automated recovery failed. Manual reboot required.', 'error', 5000);
+          useNotificationStore
+            .getState()
+            .addNotification('Automated recovery failed. Manual reboot required.', 'error', 5000);
           return false;
         }
       },

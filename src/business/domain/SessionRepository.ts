@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Session Repository Interface
- * 
+ *
  * Part of Slice 1.3: Session Platform.
  * Declares the data contract for CRUD, real-time sync, and device-level caching
  * of active user session records.

@@ -7,28 +7,28 @@
 
 import { BaseResilienceError, FailureCategory, ErrorSeverity, classifyError } from './errors';
 import { StoreRegistry } from '@/stores/platform/storeRegistry';
-import { validateFirestoreConnection } from '@/firebase/config';
+import { supabase } from '@/lib/supabase/client';
 
 export enum RecoveryStrategyType {
-  RETRY = 'RETRY',                 // Retry action with backoff
-  OFFLINE_MODE = 'OFFLINE_MODE',   // Degrade to client-side localStorage/offline
+  RETRY = 'RETRY', // Retry action with backoff
+  OFFLINE_MODE = 'OFFLINE_MODE', // Degrade to client-side localStorage/offline
   FALLBACK_PLAN = 'FALLBACK_PLAN', // Serve static backup/Pomodoro plans
-  REBOOT = 'REBOOT',               // Reset bootstrap state and restart bootloader
-  LOG_ONLY = 'LOG_ONLY',           // Silently log and alert user via passive notification
-  ESCALATE = 'ESCALATE',           // Pass to Global Fallback UI for fatal crashes
+  REBOOT = 'REBOOT', // Reset bootstrap state and restart bootloader
+  LOG_ONLY = 'LOG_ONLY', // Silently log and alert user via passive notification
+  ESCALATE = 'ESCALATE', // Pass to Global Fallback UI for fatal crashes
 }
 
 /**
  * Maps a failure category to its default, recommended recovery strategy.
  */
 export const RECOVERY_STRATEGY_REGISTRY: Record<FailureCategory, RecoveryStrategyType> = {
-  [FailureCategory.RUNTIME]: RecoveryStrategyType.ESCALATE,     // Render crashed, reboot sandbox
+  [FailureCategory.RUNTIME]: RecoveryStrategyType.ESCALATE, // Render crashed, reboot sandbox
   [FailureCategory.NETWORK]: RecoveryStrategyType.OFFLINE_MODE, // Transition to offline mode
-  [FailureCategory.FIREBASE]: RecoveryStrategyType.RETRY,       // Retry, then degrade to local storage
-  [FailureCategory.AI]: RecoveryStrategyType.FALLBACK_PLAN,    // Build default static timeline
-  [FailureCategory.VALIDATION]: RecoveryStrategyType.LOG_ONLY,   // Inform user of bad schema, continue
-  [FailureCategory.PERMISSION]: RecoveryStrategyType.ESCALATE,   // Block view, require re-auth
-  [FailureCategory.UNKNOWN]: RecoveryStrategyType.ESCALATE,      // Standard escalation
+  [FailureCategory.DATABASE]: RecoveryStrategyType.RETRY, // Retry, then degrade to local storage
+  [FailureCategory.AI]: RecoveryStrategyType.FALLBACK_PLAN, // Build default static timeline
+  [FailureCategory.VALIDATION]: RecoveryStrategyType.LOG_ONLY, // Inform user of bad schema, continue
+  [FailureCategory.PERMISSION]: RecoveryStrategyType.ESCALATE, // Block view, require re-auth
+  [FailureCategory.UNKNOWN]: RecoveryStrategyType.ESCALATE, // Standard escalation
 };
 
 /**
@@ -39,7 +39,7 @@ export async function retryWithBackoff<T>(
   maxAttempts: number = 3,
   initialDelayMs: number = 1000,
   multiplier: number = 2,
-  onRetry?: (attempt: number, error: any) => void
+  onRetry?: (attempt: number, error: unknown) => void,
 ): Promise<T> {
   let attempt = 1;
   let delay = initialDelayMs;
@@ -58,7 +58,7 @@ export async function retryWithBackoff<T>(
 
       console.warn(
         `⚡ [Resilience] Operation failed (Attempt ${attempt}/${maxAttempts}). Retrying in ${delay}ms...`,
-        error
+        error,
       );
 
       await new Promise((resolve) => setTimeout(resolve, delay));
@@ -81,11 +81,17 @@ export function reportCrash(error: BaseResilienceError): void {
     timestamp: error.timestamp,
     stack: error.stack,
     details: error.details,
-    originalError: error.originalError instanceof Error ? error.originalError.stack : String(error.originalError),
+    originalError:
+      error.originalError instanceof Error
+        ? error.originalError.stack
+        : String(error.originalError),
   };
 
-  console.error('📊 [CRASH_REPORTER] (Integration Point) Sentry/LogRocket target payload:', JSON.stringify(payload, null, 2));
-  
+  console.error(
+    '📊 [CRASH_REPORTER] (Integration Point) Sentry/LogRocket target payload:',
+    JSON.stringify(payload, null, 2),
+  );
+
   // Future hook:
   // if (import.meta.env.PROD) {
   //   Sentry.captureException(error, { tags: { correlationId: error.correlationId, category: error.category } });
@@ -95,7 +101,7 @@ export function reportCrash(error: BaseResilienceError): void {
 /**
  * Future Telemetry Integration Point
  */
-export function logTelemetry(metricName: string, details: Record<string, any>): void {
+export function logTelemetry(metricName: string, details: Record<string, unknown>): void {
   const payload = {
     timestamp: new Date().toISOString(),
     metricName,
@@ -115,9 +121,9 @@ class RuntimeRecoveryManagerClass {
    * Evaluates an error, logs telemetry, dispatches crash reports, and returns
    * the appropriate strategy type to handle the exception.
    */
-  public handleFailure(error: unknown, context?: Record<string, any>): RecoveryStrategyType {
+  public handleFailure(error: unknown, context?: Record<string, unknown>): RecoveryStrategyType {
     const classified = classifyError(error);
-    
+
     // 1. Log telemetry of failure
     logTelemetry('FAILURE_DETECTED', {
       category: classified.category,
@@ -134,9 +140,9 @@ class RuntimeRecoveryManagerClass {
 
     // 3. Look up strategy mapping
     const defaultStrategy = RECOVERY_STRATEGY_REGISTRY[classified.category];
-    
+
     console.info(
-      `⚡ [RecoveryManager] Classifying exception. Category: ${classified.category}, Severity: ${classified.severity}. Default Strategy: ${defaultStrategy}. (ID: ${classified.correlationId})`
+      `⚡ [RecoveryManager] Classifying exception. Category: ${classified.category}, Severity: ${classified.severity}. Default Strategy: ${defaultStrategy}. (ID: ${classified.correlationId})`,
     );
 
     return defaultStrategy;
@@ -164,8 +170,14 @@ class RuntimeRecoveryManagerClass {
       // 2. Sync state platform hydration
       StoreRegistry.triggerHydrationCheck();
 
-      // 3. Re-verify Firestore pipeline connectivity
-      const dbConnected = await validateFirestoreConnection();
+      // 3. Re-verify Supabase pipeline connectivity
+      let dbConnected = false;
+      try {
+        const { data } = await supabase.auth.getSession();
+        dbConnected = !!data.session;
+      } catch {
+        dbConnected = false;
+      }
 
       const success = StoreRegistry.isAllHydrated();
       logTelemetry('SELF_HEALING_COMPLETED', { success, dbConnected });
@@ -184,7 +196,7 @@ class RuntimeRecoveryManagerClass {
   public clearVolatileStateCaches(): void {
     console.warn('⚡ [RecoveryManager] Purging non-persistent platform stores...');
     logTelemetry('STATE_CACHE_PURGED', {});
-    
+
     const storeNames = StoreRegistry.getRegisteredStoreNames();
     storeNames.forEach((name) => {
       // Keep Auth store safe during cache purges

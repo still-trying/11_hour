@@ -9,7 +9,10 @@ interface WelcomeScreenProps {
 
 export function WelcomeScreen({ onNavigate }: WelcomeScreenProps): React.JSX.Element {
   return (
-    <Card className="flex flex-col gap-sys-lg bg-bg-secondary border border-border-muted" padding="lg">
+    <Card
+      className="flex flex-col gap-sys-lg bg-bg-secondary border border-border-muted"
+      padding="lg"
+    >
       {/* Dynamic cortisol rescue header */}
       <div className="flex flex-col gap-2">
         <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sys-full bg-accent-amber/10 border border-accent-amber/20 text-accent-amber text-[10px] font-mono tracking-wider uppercase w-fit">
@@ -20,7 +23,8 @@ export function WelcomeScreen({ onNavigate }: WelcomeScreenProps): React.JSX.Ele
           Breathe in. We've got you.
         </h1>
         <p className="text-sm text-text-muted leading-relaxed font-sans mt-1">
-          Friction is the enemy, momentum is the cure. Under looming deadlines, 11_HOUR shields you from planning paralysis by turning unstructured panic into immediate, bite-sized starts.
+          Friction is the enemy, momentum is the cure. Under looming deadlines, 11_HOUR shields you
+          from planning paralysis by turning unstructured panic into immediate, bite-sized starts.
         </p>
       </div>
 
@@ -35,7 +39,8 @@ export function WelcomeScreen({ onNavigate }: WelcomeScreenProps): React.JSX.Ele
               Immediate Cortisol Reduction
             </span>
             <span className="text-[11px] text-text-muted leading-normal mt-0.5">
-              No task managers, folders, or tagging circles. Just throw in your raw requirements and execute.
+              No task managers, folders, or tagging circles. Just throw in your raw requirements and
+              execute.
             </span>
           </div>
         </div>
@@ -49,7 +54,8 @@ export function WelcomeScreen({ onNavigate }: WelcomeScreenProps): React.JSX.Ele
               AI Decomposition Companion
             </span>
             <span className="text-[11px] text-text-muted leading-normal mt-0.5">
-              Our specialized prompt execution models generate linear timelines with built-in buffer times.
+              Our specialized prompt execution models generate linear timelines with built-in buffer
+              times.
             </span>
           </div>
         </div>

@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Authorization Platform Type Definitions
- * 
+ *
  * Part of Slice 1.4: Authorization Platform & Route Access Framework.
  * Establishes the types, enums, interfaces, and exception classes for
  * decentralized access decisions and policy evaluation.
@@ -46,8 +46,8 @@ export enum RouteAccessType {
  */
 export enum DecisionStrategy {
   AFFIRMATIVE = 'AFFIRMATIVE', // Grant if any policy passes
-  UNANIMOUS = 'UNANIMOUS',     // Grant only if all policies pass
-  CONSENSUS = 'CONSENSUS',     // Grant if majority of policies pass
+  UNANIMOUS = 'UNANIMOUS', // Grant only if all policies pass
+  CONSENSUS = 'CONSENSUS', // Grant if majority of policies pass
 }
 
 /**
@@ -120,7 +120,7 @@ export class AuthorizationException extends Error {
     code: AuthzErrorCode,
     message: string,
     correlationId: string = 'authz_' + Math.random().toString(36).substring(2, 11),
-    originalError?: unknown
+    originalError?: unknown,
   ) {
     super(message);
     this.name = 'AuthorizationException';
@@ -137,7 +137,10 @@ export class AuthorizationException extends Error {
       code: this.code,
       message: this.message,
       correlationId: this.correlationId,
-      originalMessage: this.originalError instanceof Error ? this.originalError.message : String(this.originalError || ''),
+      originalMessage:
+        this.originalError instanceof Error
+          ? this.originalError.message
+          : String(this.originalError || ''),
     };
   }
 }

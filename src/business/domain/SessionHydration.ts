@@ -1,6 +1,6 @@
 /**
  * 11_HOUR - Session Hydration Controller
- * 
+ *
  * Part of Slice 1.3: Session Platform.
  * Loads and verifies the integrity of cached browser sessions during application initialization,
  * handling corrupt states or expired idle windows elegantly.
@@ -31,7 +31,7 @@ export class SessionHydration {
       const validation = safeValidateSession(cached);
       if (!validation.success) {
         SessionLogging.warn(
-          `Hydration schema invalid: ${validation.error.message}. Evicting cache.`
+          `Hydration schema invalid: ${validation.error.message}. Evicting cache.`,
         );
         SessionPersistence.clearLocalCache();
         return null;
@@ -44,7 +44,9 @@ export class SessionHydration {
       const idleTime = Date.now() - lastActive;
 
       if (idleTime >= SESSION_TIMEOUTS.IDLE_TIMEOUT_MS) {
-        SessionLogging.warn(`Session "${session.sessionId}" has expired due to exceeding idle threshold.`);
+        SessionLogging.warn(
+          `Session "${session.sessionId}" has expired due to exceeding idle threshold.`,
+        );
         return {
           session: {
             ...session,
@@ -56,7 +58,7 @@ export class SessionHydration {
 
       SessionLogging.info(`Session "${session.sessionId}" successfully hydrated from cache.`);
       SessionLogging.metric('SessionHydration', performance.now() - startTime, true);
-      
+
       return {
         session,
         state: session.state,

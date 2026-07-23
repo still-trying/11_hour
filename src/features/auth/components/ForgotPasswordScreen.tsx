@@ -11,7 +11,14 @@ interface ForgotPasswordScreenProps {
 }
 
 export function ForgotPasswordScreen({ onNavigate }: ForgotPasswordScreenProps): React.JSX.Element {
-  const { sendForgotPasswordReset, isLoading, error: storeError, resetSuccess, clearError, clearResetSuccess } = useAuth();
+  const {
+    sendForgotPasswordReset,
+    isLoading,
+    error: storeError,
+    resetSuccess,
+    clearError,
+    clearResetSuccess,
+  } = useAuth();
   const [email, setEmail] = useState('');
   const [localError, setLocalError] = useState<string | undefined>(undefined);
 
@@ -41,7 +48,10 @@ export function ForgotPasswordScreen({ onNavigate }: ForgotPasswordScreenProps):
 
   if (resetSuccess) {
     return (
-      <Card className="flex flex-col gap-sys-lg bg-bg-secondary border border-border-muted text-center py-sys-xl px-sys-lg" padding="lg">
+      <Card
+        className="flex flex-col gap-sys-lg bg-bg-secondary border border-border-muted text-center py-sys-xl px-sys-lg"
+        padding="lg"
+      >
         <div className="flex flex-col items-center justify-center gap-sys-md">
           <div className="p-3 bg-accent-emerald/10 border border-accent-emerald/20 text-accent-emerald rounded-full animate-bounce">
             <CheckCircle2 size={32} />
@@ -51,7 +61,9 @@ export function ForgotPasswordScreen({ onNavigate }: ForgotPasswordScreenProps):
               Recovery Link Sent
             </h2>
             <p className="text-xs text-text-muted max-w-sm mx-auto leading-relaxed mt-1 font-sans">
-              We've dispatched a secure recovery token to <strong className="text-text-primary">{email}</strong>. Please check your inbox and spam folders.
+              We've dispatched a secure recovery token to{' '}
+              <strong className="text-text-primary">{email}</strong>. Please check your inbox and
+              spam folders.
             </p>
           </div>
         </div>
@@ -72,7 +84,10 @@ export function ForgotPasswordScreen({ onNavigate }: ForgotPasswordScreenProps):
   }
 
   return (
-    <Card className="flex flex-col gap-sys-lg bg-bg-secondary border border-border-muted" padding="lg">
+    <Card
+      className="flex flex-col gap-sys-lg bg-bg-secondary border border-border-muted"
+      padding="lg"
+    >
       <div className="flex items-center justify-between">
         <button
           onClick={() => {
@@ -96,7 +111,8 @@ export function ForgotPasswordScreen({ onNavigate }: ForgotPasswordScreenProps):
           Restore Access Key
         </h2>
         <p className="text-xs text-text-muted">
-          Type in your registered email below, and we will dispatch a secure link to reset your account credentials safely.
+          Type in your registered email below, and we will dispatch a secure link to reset your
+          account credentials safely.
         </p>
       </div>
 

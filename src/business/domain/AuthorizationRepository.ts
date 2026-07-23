@@ -1,9 +1,9 @@
 /**
  * 11_HOUR - Authorization Repository
- * 
+ *
  * Part of Slice 1.4: Authorization Platform & Route Access Framework.
  * Declares domain repository boundaries for retrieving user roles, permission sets,
- * and active feature flag states without exposing Firebase directly.
+ * and active feature flag states without exposing the database directly.
  */
 
 import { IAuthorizationContext, UserRole, UserPermission } from './authzTypes';
@@ -15,18 +15,31 @@ export interface IAuthorizationRepository {
   /**
    * Retrieves or constructs the complete authorization profile context for an authenticated user.
    */
-  getAuthorizationContext(userId: string, userProfile: UserProfile | null): Promise<IAuthorizationContext>;
+  getAuthorizationContext(
+    userId: string,
+    userProfile: UserProfile | null,
+  ): Promise<IAuthorizationContext>;
 
   /**
    * Saves or overrides permissions/role flags (for admin actions or overrides).
    */
-  updateAuthorizationContext(userId: string, role: UserRole, extraPermissions?: Set<UserPermission>): Promise<void>;
+  updateAuthorizationContext(
+    userId: string,
+    role: UserRole,
+    extraPermissions?: Set<UserPermission>,
+  ): Promise<void>;
 }
 
 export class MemoryAuthorizationRepository implements IAuthorizationRepository {
-  private customContexts = new Map<string, { role: UserRole; extraPermissions?: Set<UserPermission> }>();
+  private customContexts = new Map<
+    string,
+    { role: UserRole; extraPermissions?: Set<UserPermission> }
+  >();
 
-  public async getAuthorizationContext(userId: string, userProfile: UserProfile | null): Promise<IAuthorizationContext> {
+  public async getAuthorizationContext(
+    userId: string,
+    userProfile: UserProfile | null,
+  ): Promise<IAuthorizationContext> {
     // Determine default role based on profile email, or fallback to Member or Anonymous
     const email = userProfile?.email;
     let role = AuthzUtils.determineRoleFromEmail(email);
@@ -58,7 +71,11 @@ export class MemoryAuthorizationRepository implements IAuthorizationRepository {
     };
   }
 
-  public async updateAuthorizationContext(userId: string, role: UserRole, extraPermissions?: Set<UserPermission>): Promise<void> {
+  public async updateAuthorizationContext(
+    userId: string,
+    role: UserRole,
+    extraPermissions?: Set<UserPermission>,
+  ): Promise<void> {
     this.customContexts.set(userId, { role, extraPermissions });
   }
 }
